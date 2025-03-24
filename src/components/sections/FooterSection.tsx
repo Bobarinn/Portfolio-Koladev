@@ -57,12 +57,7 @@ export const FooterSection = () => {
         </div>
         
         <div className="mt-8 pt-4 border-t border-border/10 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
-          <p>&copy; {currentYear} kolade.dev. All rights reserved.</p>
-          
-          <div className="flex gap-4 mt-4 md:mt-0">
-            <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-foreground transition-colors">Terms of Service</a>
-          </div>
+          <p>&copy; {currentYear} Koladev.dev. All rights reserved.</p>
         </div>
       </div>
     </footer>
