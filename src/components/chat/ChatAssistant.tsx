@@ -71,23 +71,56 @@ export const ChatAssistant = () => {
     setIsTyping(true);
     
     try {
-      // For demo purpose using mock responses
-      const demoResponses = [
-        "I'd be happy to tell you about Kolade's expertise in software development!",
-        "Kolade specializes in creating modern web applications using Next.js, React, and AI integrations.",
-        "You can schedule a consultation with Kolade through his Calendly link. Would you like me to provide that for you?",
-        "Feel free to explore the portfolio section to see examples of Kolade's previous work.",
-        "Kolade typically starts projects with an initial consultation to understand requirements, followed by a detailed proposal with timeline and milestones."
-      ];
+      // Send to API
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: [...messages, userMessage],
+        }),
+      });
       
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Pick a random response for demo purposes
-      const randomResponse = demoResponses[Math.floor(Math.random() * demoResponses.length)];
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
       
       // Create a new message for the assistant's response
-      setMessages(prev => [...prev, { role: 'assistant', content: randomResponse }]);
+      const assistantMessage: MessageType = { role: 'assistant', content: '' };
+      setMessages(prev => [...prev, assistantMessage]);
+      
+      // Get the index of the new assistant message
+      const assistantMessageIndex = messages.length;
+      
+      // Read the streaming response
+      const reader = response.body!.getReader();
+      const decoder = new TextDecoder();
+      
+      let done = false;
+      let assistantResponse = '';
+      
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        done = doneReading;
+        
+        if (value) {
+          const text = decoder.decode(value);
+          assistantResponse += text;
+          
+          // Update the message with the accumulated response
+          setMessages(prev => {
+            const updated = [...prev];
+            if (updated[assistantMessageIndex]) {
+              updated[assistantMessageIndex] = {
+                ...updated[assistantMessageIndex],
+                content: assistantResponse,
+              };
+            }
+            return updated;
+          });
+        }
+      }
       
       setIsTyping(false);
     } catch (error) {
