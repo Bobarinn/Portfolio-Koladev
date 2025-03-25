@@ -1,10 +1,9 @@
 import { OpenAI } from 'openai';
-import { OpenAIStream, StreamingTextResponse } from 'ai';
 import { NextRequest } from 'next/server';
 
 // Create an OpenAI API client
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY || '',
 });
 
 // This context provides information about Kolade to the AI
@@ -39,7 +38,7 @@ export async function POST(req: NextRequest) {
   const { messages } = await req.json();
 
   // Ask OpenAI for a streaming chat completion
-  const response = await openai.chat.completions.create({
+  const stream = await openai.chat.completions.create({
     model: 'gpt-4-turbo',
     stream: true,
     temperature: 0.7,
@@ -49,9 +48,20 @@ export async function POST(req: NextRequest) {
     ],
   });
 
-  // Convert the response into a streaming response
-  const stream = OpenAIStream(response);
-  
-  // Return a streaming response
-  return new StreamingTextResponse(stream);
+  // Transform the stream into a text-decoder friendly stream
+  const textEncoder = new TextEncoder();
+  const readable = new ReadableStream({
+    async start(controller) {
+      for await (const chunk of stream) {
+        const text = chunk.choices[0]?.delta?.content || '';
+        if (text) {
+          controller.enqueue(textEncoder.encode(text));
+        }
+      }
+      controller.close();
+    },
+  });
+
+  // Return the response as a readable stream
+  return new Response(readable);
 } 

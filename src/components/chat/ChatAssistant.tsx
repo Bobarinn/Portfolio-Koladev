@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useChat } from 'ai/react';
 import { Message } from './Message';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -9,14 +8,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { MessageSquareIcon, X, Send, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+type Message = {
+  role: 'user' | 'assistant';
+  content: string;
+};
+
 export const ChatAssistant = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    api: '/api/chat',
-  });
 
   useEffect(() => {
     if (isOpen && messagesEndRef.current) {
@@ -26,15 +29,91 @@ export const ChatAssistant = () => {
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
-    
-    // Add initial message if opening chat with no messages
-    if (!isOpen && messages.length === 0) {
-      // The useChat hook will automatically add this message to the UI
-    }
   };
 
   const toggleMaximize = () => {
     setIsMaximized(!isMaximized);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (input.trim() === '' || isLoading) return;
+    
+    // Add user message to chat
+    const userMessage = { role: 'user' as const, content: input.trim() };
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    setIsLoading(true);
+    
+    try {
+      // Send to API
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: [...messages, userMessage],
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      
+      // Create a new message for the assistant's response
+      const assistantMessage: Message = { role: 'assistant', content: '' };
+      setMessages(prev => [...prev, assistantMessage]);
+      
+      // Get the index of the new assistant message
+      const assistantMessageIndex = messages.length;
+      
+      // Read the streaming response
+      const reader = response.body!.getReader();
+      const decoder = new TextDecoder();
+      
+      let done = false;
+      let assistantResponse = '';
+      
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        done = doneReading;
+        
+        if (value) {
+          const text = decoder.decode(value);
+          assistantResponse += text;
+          
+          // Update the message with the accumulated response
+          setMessages(prev => {
+            const updated = [...prev];
+            if (updated[assistantMessageIndex]) {
+              updated[assistantMessageIndex] = {
+                ...updated[assistantMessageIndex],
+                content: assistantResponse,
+              };
+            }
+            return updated;
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      // Add an error message
+      setMessages(prev => [
+        ...prev,
+        { 
+          role: 'assistant', 
+          content: 'Sorry, I encountered an error. Please try again later.' 
+        }
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
