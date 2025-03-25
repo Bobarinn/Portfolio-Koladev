@@ -1,24 +1,26 @@
 import type { Metadata, Viewport } from "next";
-import { Inter as FontSans, Space_Grotesk as FontHeading, Fira_Code as FontMono } from "next/font/google";
+import { Space_Grotesk as FontSans, Fira_Code as FontMono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 import { ChatProvider } from "@/components/chat/ChatProvider";
 
+// Load Space_Grotesk with all weights
 const fontSans = FontSans({
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
   variable: "--font-sans",
-});
-
-const fontHeading = FontHeading({
-  subsets: ["latin"],
-  variable: "--font-heading",
+  preload: true,
+  fallback: ['system-ui', 'sans-serif'],
 });
 
 const fontMono = FontMono({
   subsets: ["latin"],
   variable: "--font-mono",
   weight: ["400", "500", "700"],
+  display: "swap",
+  preload: true,
 });
 
 export const viewport: Viewport = {
@@ -48,15 +50,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="dark">
-      <body className={cn(
-        "min-h-screen bg-background font-sans antialiased overflow-x-hidden",
-        fontSans.variable,
-        fontHeading.variable,
-        fontMono.variable
-      )}>
-        
-        
+    <html lang="en" className={cn("dark", fontSans.variable, fontMono.variable)}>
+      <body className="min-h-screen bg-background font-sans antialiased overflow-x-hidden">
         {children}
         <Toaster position="top-right" />
         <ChatProvider />

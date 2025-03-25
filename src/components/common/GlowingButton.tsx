@@ -74,7 +74,7 @@ export const GlowingButton = React.forwardRef<HTMLButtonElement, GlowingButtonPr
             onClick={onClick}
             {...props}
           >
-            <a href={href}>{children}</a>
+            <a href={href} target="_blank" rel="noopener noreferrer">{children}</a>
           </Button>
         ) : (
           <Button

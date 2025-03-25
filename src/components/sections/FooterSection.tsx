@@ -35,7 +35,7 @@ export const FooterSection = () => {
                 onClick={handleScrollToTop}
               />
               <p className="text-sm text-muted-foreground mt-2">
-                Building at the intersection of No-Code, Code, and AI
+                Building at the intersection of No-Code, Traditional Code, and AI
               </p>
             </motion.div>
           </div>

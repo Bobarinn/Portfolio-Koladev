@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { BookOpenIcon, MenuIcon, XIcon } from 'lucide-react';
 import { GlowingButton } from './GlowingButton';
 import { AnimatedLogo } from './AnimatedLogo';
+import { profile } from '@/data/profile';
 
 export const Header = () => {
   const [showHeader, setShowHeader] = useState(false);
@@ -129,7 +130,7 @@ export const Header = () => {
             >
               Contact
             </button>
-            <GlowingButton href="/calendly">
+            <GlowingButton href={profile.calendlyUrl}>
               <span className="flex items-center">
                 <BookOpenIcon className="w-4 h-4 mr-2" />
                 Book a Call
@@ -183,7 +184,7 @@ export const Header = () => {
                 Contact
               </button>
               <div className="py-2 px-4">
-                <GlowingButton href="/calendly" className="w-full justify-center">
+                <GlowingButton href={profile.calendlyUrl} className="w-full justify-center">
                   <span className="flex items-center">
                     <BookOpenIcon className="w-4 h-4 mr-2" />
                     Book a Call

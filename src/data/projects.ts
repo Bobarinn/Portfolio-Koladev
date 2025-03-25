@@ -24,10 +24,10 @@ export const projects: Project[] = [
   {
     id: "ai-2",
     title: "Xophie.ai",
-    description: "An AI meeting assistant that records, transcribes, and organizes meeting notes. It leverages Make.com to monitor Firebase authentication events and sends personalized welcome emails, while integrating advanced text-to-speech and speech intelligence features.",
+    description: "An AI meeting assistant that records, transcribes, and organizes meeting notes. It leverages AssemblyAI, Recall.ai, Zoom API SDK, Firebase auth, and cloud functions to bring about a well-rounded application for advanced speech-to-text intelligence and seamless meeting management.",
     category: "ai",
     image: "/projects/xophie.png",
-    tags: ["Next.js","Flutterwave", "TypeScript", "Make.com", "Firebase", "AssemblyAI", "OpenAI"],
+    tags: ["Next.js","Flutterwave", "TypeScript", "Firebase", "AssemblyAI", "Recall.ai", "Zoom SDK"],
     demoUrl: "https://xophie.ai",
     repoUrl: "https://github.com/Bobarinn/xophieai",
   },

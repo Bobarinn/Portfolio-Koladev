@@ -15,7 +15,7 @@ interface AnimatedLogoProps {
 export const AnimatedLogo = ({
   onClick,
   className = '',
-  showImageInterval = 10000, // Show image every 10 seconds by default
+  showImageInterval = 30000, // Show image every 10 seconds by default
   imageDuration = 5000, // Show image for 5 seconds by default (increased from 3s)
   hideDomainName = false
 }: AnimatedLogoProps) => {

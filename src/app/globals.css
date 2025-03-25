@@ -5,8 +5,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -88,6 +88,44 @@
   --glow-shadow-blue: 0 0 15px 2px rgba(var(--glow-blue-rgb), 0.6);
   --glow-shadow-purple: 0 0 15px 2px rgba(var(--glow-purple-rgb), 0.6);
   --glow-shadow-cyan: 0 0 15px 2px rgba(var(--glow-cyan-rgb), 0.6);
+  
+  /* Ensure the font is properly defined with fallbacks */
+}
+
+/* Override Tailwind's font-sans to use Space Grotesk more directly */
+@layer base {
+  :root {
+    --font-fallback: system-ui, sans-serif;
+    /* Space Grotesk should be applied by the variable from Next.js font loader */
+  }
+  
+  body {
+    font-family: var(--font-sans, 'Space Grotesk'), var(--font-fallback);
+  }
+  
+  pre, code {
+    font-family: var(--font-mono, 'Fira Code'), monospace;
+  }
+}
+
+/* Space Grotesk customizations */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  letter-spacing: -0.02em; /* More noticeable tight letter spacing */
+  font-feature-settings: "salt" on, "ss01" on; /* Enable stylistic alternates in Space Grotesk */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.03em; /* Even tighter letter spacing for headings */
+  font-feature-settings: "salt" on, "ss01" on, "case" on;
+}
+
+/* Make the distinctive Space Grotesk characters more obvious */
+.text-3xl, .text-4xl, .text-5xl, .text-6xl {
+  letter-spacing: -0.04em;
+  font-stretch: 105%; /* Space Grotesk tends to be a bit wider than system fonts */
 }
 
 .dark {
@@ -635,4 +673,195 @@ button:is(.text-glow-purple, .border-glow-purple):hover,
 .chat-button-hover:hover::after {
   opacity: 0.4;
   transform: scale(1);
+}
+
+/* Markdown content styling */
+.markdown-content {
+  position: relative;
+}
+
+.markdown-content a {
+  color: rgb(var(--glow-cyan-rgb));
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: all 0.2s ease;
+  padding: 0 2px;
+  border-radius: 3px;
+}
+
+.markdown-content a:hover {
+  color: white;
+  background-color: rgba(var(--glow-blue-rgb), 0.2);
+  text-decoration-thickness: 2px;
+}
+
+/* Special styling for Calendly links */
+.calendly-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: rgb(var(--glow-cyan-rgb));
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: inherit;
+  line-height: inherit;
+  background: rgba(var(--glow-cyan-rgb), 0.1);
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.calendly-link:hover {
+  color: white;
+  background: rgba(var(--glow-cyan-rgb), 0.15);
+  border-color: rgba(var(--glow-cyan-rgb), 0.3);
+  transform: translateY(-1px);
+}
+
+.calendly-link .icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  opacity: 0.9;
+  transition: transform 0.2s ease;
+}
+
+.calendly-link:hover .icon {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+.calendly-link .text {
+  position: relative;
+  z-index: 1;
+  font-weight: 500;
+}
+
+/* Message component styling */
+.message-container {
+  position: relative;
+}
+
+.message-content {
+  position: relative;
+}
+
+.copy-button {
+  position: absolute;
+  top: 0.5rem;
+  right: -2.5rem;
+  opacity: 0;
+  transition: all 0.2s ease;
+  color: rgba(var(--glow-cyan-rgb), 0.6);
+  background: transparent;
+  padding: 0.25rem;
+  border-radius: 4px;
+}
+
+.message-container:hover .copy-button {
+  opacity: 1;
+}
+
+.copy-button:hover {
+  color: rgb(var(--glow-cyan-rgb));
+  background: rgba(var(--glow-cyan-rgb), 0.1);
+}
+
+/* Improved List Styling */
+.markdown-content ul {
+  list-style-type: disc !important;
+  margin-left: 1.5rem !important;
+  margin-top: 0.75rem !important;
+  margin-bottom: 0.75rem !important;
+}
+
+.markdown-content ol {
+  list-style-type: decimal !important;
+  margin-left: 1.5rem !important;
+  margin-top: 0.75rem !important;
+  margin-bottom: 0.75rem !important;
+  counter-reset: none !important;
+}
+
+.markdown-content li {
+  display: list-item !important;
+  margin-bottom: 0.75rem !important;
+  position: relative !important;
+}
+
+.markdown-content li:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Fix paragraph margins inside list items */
+.markdown-content li > p {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  display: inline-block !important;
+}
+
+/* Fix for counters that were breaking list items */
+.markdown-content ol li:before {
+  content: none !important;
+  display: none !important;
+}
+
+/* Reset any compact-markdown styling for lists */
+.compact-markdown ol,
+.compact-markdown ul {
+  list-style-position: outside !important;
+  padding-left: 1.5rem !important;
+}
+
+.compact-markdown ol li,
+.compact-markdown ul li {
+  display: list-item !important;
+}
+
+.compact-markdown ol li:before {
+  content: none !important;
+  display: none !important;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient 3s ease infinite;
+  background-size: 200% 100%;
+}
+
+@keyframes pulse-border {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--glow-blue-rgb), 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(var(--glow-blue-rgb), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--glow-blue-rgb), 0);
+  }
+}
+
+@keyframes shine {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
 }

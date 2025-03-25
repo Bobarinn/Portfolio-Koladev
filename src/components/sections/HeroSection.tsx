@@ -1,3 +1,4 @@
+// src/components/sections/HeroSection.tsx
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
@@ -93,7 +94,7 @@ export const HeroSection = () => {
   });
 
   return (
-    <section className="relative min-h-screen w-full flex flex-col justify-center items-center px-4 overflow-x-hidden" ref={scrollRef}>
+    <section className="relative min-h-screen w-full flex flex-col justify-start items-center px-4 overflow-x-hidden pt-16 md:pt-12" ref={scrollRef}>
       {/* Enhanced Background Elements - Simplified with reduced animations */}
       <div className="absolute inset-0 z-0 max-w-full">
         {/* Static grid background */}
@@ -147,14 +148,14 @@ export const HeroSection = () => {
       </div>
 
       {/* Hero Content */}
-      <div className="max-w-5xl mx-auto text-center z-10 relative w-full flex flex-col justify-between h-full py-16 md:py-12">
+      <div className="max-w-5xl mx-auto text-center z-10 relative w-full flex flex-col h-full py-6 md:py-4 mt-[-8vh]">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="flex flex-col h-full justify-between"
+          className="flex flex-col h-full"
         >
-          <div className="space-y-2 md:space-y-6">
+          <div className="space-y-2 md:space-y-3">
             <motion.div variants={itemVariants} className="flex flex-col items-center">
               {/* Profile Image - smaller on mobile */}
               <motion.div
@@ -166,9 +167,9 @@ export const HeroSection = () => {
                   damping: 20, 
                   delay: 0.2 
                 }}
-                className="mb-8 md:mb-6 relative"
+                className="mb-4 md:mb-3 relative"
               >
-                <div className="w-20 h-20 md:w-28 md:h-28 rounded-full overflow-hidden border-4 border-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple p-1 bg-gradient-to-r from-glow-cyan/20 via-glow-blue/20 to-glow-purple/20 relative">
+                <div className="w-16 h-16 md:w-24 md:h-24 rounded-full overflow-hidden border-4 border-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple p-1 bg-gradient-to-r from-glow-cyan/20 via-glow-blue/20 to-glow-purple/20 relative">
                   <div className="absolute inset-0 rounded-full bg-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple opacity-30 animate-pulse"></div>
                   <div className="w-full h-full rounded-full overflow-hidden relative">
                     <Image
@@ -182,26 +183,26 @@ export const HeroSection = () => {
                 
                 {/* Floating Elements Around Image - slowed down */}
                 <motion.div 
-                  className="absolute -top-2 -right-2 w-6 h-6 md:w-8 md:h-8 bg-card/30 backdrop-blur-sm rounded-full flex items-center justify-center text-glow-blue" 
+                  className="absolute -top-2 -right-2 w-5 h-5 md:w-6 md:h-6 bg-card/30 backdrop-blur-sm rounded-full flex items-center justify-center text-glow-blue" 
                   animate={{ y: [0, -3, 0] }}
                   transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  <span className="text-xs md:text-sm">✨</span>
+                  <span className="text-xs">✨</span>
                 </motion.div>
                 
                 <motion.div 
-                  className="absolute -bottom-1 -left-1 w-5 h-5 md:w-6 md:h-6 bg-card/30 backdrop-blur-sm rounded-full flex items-center justify-center text-glow-purple" 
+                  className="absolute -bottom-1 -left-1 w-4 h-4 md:w-5 md:h-5 bg-card/30 backdrop-blur-sm rounded-full flex items-center justify-center text-glow-purple" 
                   animate={{ y: [0, 3, 0] }}
                   transition={{ duration: 3, delay: 0.5, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  <span className="text-xs md:text-sm">⚡</span>
+                  <span className="text-xs">⚡</span>
                 </motion.div>
               </motion.div>
             
-              <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight">
+              <h1 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
                 <AnimatedText 
                   text={`Hi, I'm ${profile.name}`} 
-                  className="inline-flex justify-center text-center mb-1 md:mb-2"
+                  className="inline-flex justify-center text-center mb-1"
                   speed={0.04}
                 />
                 <br />
@@ -216,7 +217,7 @@ export const HeroSection = () => {
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <div className="text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-2xl mx-auto">
+              <div className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto">
                 <AnimatedText 
                   text={profile.tagline} 
                   className="inline-flex justify-center text-center"
@@ -225,16 +226,16 @@ export const HeroSection = () => {
               </div>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="pt-2 md:pt-4">
-              <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto mb-4 md:mb-6">
+            <motion.div variants={itemVariants}>
+              <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto mb-3 md:mb-4">
                 {profile.description}
               </p>
             </motion.div>
           </div>
               
-          <div className="mt-auto">
+          <div className="mt-4">
             <motion.div variants={itemVariants}>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 mb-4 md:mb-6">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 md:gap-3 mb-3 md:mb-4">
                 <GlowingButton 
                   onClick={handleScrollToProjects}
                   glowColor="blue"
@@ -258,7 +259,7 @@ export const HeroSection = () => {
 
             <motion.div 
               variants={itemVariants}
-              className="flex items-center justify-center gap-3 md:gap-4"
+              className="flex items-center justify-center gap-2 md:gap-3"
             >
               {profile.socials.map((social) => (
                 <motion.a
@@ -266,7 +267,7 @@ export const HeroSection = () => {
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 rounded-full border border-border/50 bg-card/30 text-muted-foreground hover:text-foreground hover:border-glow-blue/50 hover:shadow-sm hover:shadow-glow-blue/10 transition-all duration-300"
+                  className="p-1.5 rounded-full border border-border/50 bg-card/30 text-muted-foreground hover:text-foreground hover:border-glow-blue/50 hover:shadow-sm hover:shadow-glow-blue/10 transition-all duration-300"
                   whileHover={{ scale: 1.1 }}
                 >
                   {iconMap[social.icon] || social.name}
