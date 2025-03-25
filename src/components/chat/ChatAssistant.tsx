@@ -126,21 +126,21 @@ export const ChatAssistant = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.8 }}
             className={cn(
-              'mb-2 flex w-[350px] flex-col overflow-hidden rounded-lg border border-border/50 bg-card/90 backdrop-blur-md shadow-lg',
-              isMaximized && 'sm:w-[450px] h-[500px]'
+              'mb-2 flex flex-col overflow-hidden rounded-lg border border-glow-blue/20 bg-card/95 backdrop-blur-md shadow-lg',
+              isMaximized ? 'w-[350px] sm:w-[450px] h-[500px]' : 'w-[350px] h-[400px]'
             )}
           >
             {/* Chat header */}
-            <div className="flex items-center justify-between border-b border-border/50 bg-gradient-to-r from-glow-blue/10 to-glow-purple/10 px-4 py-2">
+            <div className="flex items-center justify-between border-b border-border/50 bg-gradient-to-r from-glow-blue/20 to-glow-purple/20 px-4 py-3">
               <div className="flex items-center gap-2">
                 <MessageSquareIcon size={18} className="text-glow-cyan" />
-                <h3 className="text-sm font-medium">Ask me anything</h3>
+                <h3 className="font-medium text-foreground">Ask me anything</h3>
               </div>
               <div className="flex items-center gap-1">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 w-7 p-0"
+                  className="h-7 w-7 p-0 text-foreground/80 hover:text-foreground hover:bg-card/60"
                   onClick={toggleMaximize}
                 >
                   {isMaximized ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
@@ -148,7 +148,7 @@ export const ChatAssistant = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 w-7 p-0"
+                  className="h-7 w-7 p-0 text-foreground/80 hover:text-foreground hover:bg-card/60"
                   onClick={toggleChat}
                 >
                   <X size={16} />
@@ -157,21 +157,28 @@ export const ChatAssistant = () => {
             </div>
 
             {/* Messages container */}
-            <div className={cn('flex-1 overflow-y-auto', isMaximized ? 'h-[400px]' : 'h-[300px]')}>
+            <div className={cn(
+              'flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-glow-blue/20 scrollbar-track-transparent',
+              isMaximized ? 'min-h-[410px]' : 'min-h-[310px]'
+            )}>
               {messages.length === 0 ? (
-                <div className="flex h-full flex-col items-center justify-center p-4 text-center text-muted-foreground">
-                  <MessageSquareIcon size={32} className="mb-2 text-glow-blue/50" />
-                  <p className="text-sm">
-                    Hi there! I can answer questions about working with Kolade and his projects.
+                <div className="flex h-full flex-col items-center justify-center p-6 text-center">
+                  <div className="rounded-full bg-glow-blue/10 p-4 mb-4">
+                    <MessageSquareIcon size={32} className="text-glow-blue/70" />
+                  </div>
+                  <p className="text-sm font-medium text-foreground mb-2">
+                    Hi there! I can answer questions about working with Kolade.
                   </p>
-                  <p className="mt-1 text-xs">Ask me about his expertise, process, or availability.</p>
+                  <p className="text-sm text-muted-foreground max-w-[240px]">
+                    Ask me about his expertise, process, or how to book a consultation.
+                  </p>
                 </div>
               ) : (
                 <>
                   {messages.map((message, index) => (
                     <Message key={index} message={message} />
                   ))}
-                  <div ref={messagesEndRef} />
+                  <div ref={messagesEndRef} className="h-2" />
                 </>
               )}
             </div>
@@ -179,13 +186,13 @@ export const ChatAssistant = () => {
             {/* Input form */}
             <form
               onSubmit={handleSubmit}
-              className="flex items-end gap-2 border-t border-border/50 bg-card/30 p-2"
+              className="flex items-end gap-2 border-t border-border/50 bg-card/50 p-3"
             >
               <Textarea
                 value={input}
                 onChange={handleInputChange}
                 placeholder="Type your message..."
-                className="min-h-10 max-h-32 bg-background/50 border-border/50 text-sm"
+                className="min-h-10 max-h-32 bg-background/80 border-border/30 focus-visible:border-glow-blue/50 text-foreground placeholder:text-muted-foreground/70 resize-none"
                 rows={1}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
@@ -197,10 +204,14 @@ export const ChatAssistant = () => {
               <Button
                 type="submit"
                 size="sm"
-                className="h-10 w-10 bg-glow-blue hover:bg-glow-blue/90 p-2"
+                className="h-10 w-10 bg-glow-blue hover:bg-glow-blue/90 text-white p-2 shadow-md shadow-glow-blue/20"
                 disabled={isLoading || !input.trim()}
               >
-                <Send size={18} />
+                {isLoading ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                ) : (
+                  <Send size={18} />
+                )}
               </Button>
             </form>
           </motion.div>
@@ -212,12 +223,12 @@ export const ChatAssistant = () => {
         onClick={toggleChat}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-glow-blue/90 shadow-lg hover:bg-glow-blue transition-colors"
+        className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-glow-blue to-glow-purple shadow-lg hover:shadow-glow-blue/30 transition-all"
       >
         {isOpen ? (
-          <X size={22} className="text-white" />
+          <X size={24} className="text-white" />
         ) : (
-          <MessageSquareIcon size={22} className="text-white" />
+          <MessageSquareIcon size={24} className="text-white" />
         )}
       </motion.button>
     </div>

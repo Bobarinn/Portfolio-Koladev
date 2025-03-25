@@ -554,3 +554,21 @@ button:is(.text-glow-purple, .border-glow-purple):hover,
 .button:is(.text-glow-purple, .border-glow-purple):hover {
   animation: button-pulse-purple 2s infinite;
 }
+
+/* Scrollbar styles for the chat component */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgba(var(--glow-blue), 0.2);
+  border-radius: 10px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(var(--glow-blue), 0.4);
+}

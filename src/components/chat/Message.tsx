@@ -26,25 +26,25 @@ export const Message = ({ message, className, ...props }: MessageProps) => {
       {...props}
     >
       {!isUser && (
-        <Avatar className="h-8 w-8 border border-border/50 bg-card/30 backdrop-blur-sm">
+        <Avatar className="h-8 w-8 border border-glow-cyan/30 bg-card/50 backdrop-blur-sm shadow-sm">
           <Image src="/icon.png" alt="Kolade Abobarin" width={32} height={32} />
         </Avatar>
       )}
       
       <div
         className={cn(
-          'max-w-[80%] overflow-hidden rounded-lg p-3 text-sm',
+          'max-w-[80%] overflow-hidden rounded-lg p-3 text-sm shadow-md',
           isUser 
-            ? 'bg-glow-blue/90 text-primary-foreground' 
-            : 'bg-card/60 backdrop-blur-sm border border-border/50'
+            ? 'bg-glow-blue text-white font-medium border border-glow-blue/50' 
+            : 'bg-card/80 backdrop-blur-sm border border-glow-purple/20 text-foreground'
         )}
       >
-        <p className="whitespace-pre-wrap break-words">{message.content}</p>
+        <p className="whitespace-pre-wrap break-words leading-relaxed">{message.content}</p>
       </div>
       
       {isUser && (
-        <Avatar className="h-8 w-8 bg-glow-purple/20 border border-glow-purple/30">
-          <div className="text-xs font-semibold">You</div>
+        <Avatar className="h-8 w-8 bg-glow-purple/30 border border-glow-purple/50 shadow-sm">
+          <div className="text-xs font-semibold text-white">You</div>
         </Avatar>
       )}
     </div>
