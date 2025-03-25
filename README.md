@@ -35,6 +35,7 @@ All images should be in webp format with a recommended aspect ratio of 16:9 and 
 - **Project Showcase**: Categorized display of projects with filtering by type
 - **Skills Section**: Visual representation of technical skills and proficiencies
 - **Contact Form**: Integrated contact form with validation
+- **Chat Assistant**: AI-powered chat assistant to answer questions about your work and process
 - **Performance Optimized**: Fast loading and rendering
 
 ## Tech Stack
@@ -46,6 +47,7 @@ All images should be in webp format with a recommended aspect ratio of 16:9 and 
 - **Animations**: Framer Motion
 - **Form Handling**: React Hook Form with Zod validation
 - **3D Effects**: Three.js with React Three Fiber (optional)
+- **AI Integration**: OpenAI API with streaming responses
 
 ## Getting Started
 
@@ -53,6 +55,7 @@ All images should be in webp format with a recommended aspect ratio of 16:9 and 
 
 - Node.js 18.0.0 or later
 - npm or yarn
+- OpenAI API key (for the chat assistant feature)
 
 ### Installation
 
@@ -69,19 +72,25 @@ All images should be in webp format with a recommended aspect ratio of 16:9 and 
    yarn install
    ```
 
-3. Run the development server:
+3. Set up environment variables:
+   - Copy `.env.local.example` to `.env.local`
+   - Add your OpenAI API key to `.env.local`
+
+4. Run the development server:
    ```bash
    npm run dev
    # or
    yarn dev
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the website.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the website.
 
 ## Project Structure
 
 - `/src/app`: Next.js app router pages
+  - `/api`: API routes including chat endpoint
 - `/src/components`: Reusable UI components
+  - `/chat`: Chat assistant components
   - `/common`: Shared components used across the site
   - `/sections`: Major page sections
   - `/ui`: shadcn/ui components
@@ -96,6 +105,15 @@ All images should be in webp format with a recommended aspect ratio of 16:9 and 
 3. Edit skills in `/src/data/skills.ts`
 4. Customize side quests in `/src/data/sidequests.ts`
 5. Replace images in `/public/projects/` and `/public/sidequests/`
+
+## Chat Assistant Setup
+
+The chat assistant uses OpenAI's API to provide contextual responses about your work, projects, and process. To customize it:
+
+1. Get an API key from [OpenAI](https://platform.openai.com)
+2. Add your API key to the `.env.local` file
+3. Customize the system prompt in `/src/app/api/chat/route.ts` to better reflect your work and process
+4. The assistant will automatically appear as a chat bubble in the bottom right corner of your site
 
 ## Deployment
 

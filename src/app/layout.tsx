@@ -3,6 +3,7 @@ import { Inter as FontSans, Space_Grotesk as FontHeading, Fira_Code as FontMono 
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
+import { ChatProvider } from "@/components/chat/ChatProvider";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -58,6 +59,7 @@ export default function RootLayout({
         
         {children}
         <Toaster position="top-right" />
+        <ChatProvider />
       </body>
     </html>
   );
