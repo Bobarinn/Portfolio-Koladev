@@ -150,58 +150,63 @@ export const Message = ({ message, className, ...props }: MessageProps) => {
         </Avatar>
       )}
       
-      <div
-        className={cn(
-          'message-container max-w-[80%] overflow-hidden text-sm shadow-md',
-          isUser 
-            ? 'bg-gradient-to-br from-glow-blue to-glow-purple text-white font-medium rounded-tl-lg rounded-tr-lg rounded-bl-lg' 
-            : 'bg-card/95 border border-border/50 text-white rounded-tl-lg rounded-tr-lg rounded-br-lg'
-        )}
-      >
-        <div className={isUser ? "message-content p-1" : "message-content p-3"}>
-          {isUser ? (
-            <p className="whitespace-pre-wrap break-words leading-relaxed">
-              {message.content}
-            </p>
-          ) : (
-            <div className="prose prose-sm max-w-none space-y-4">
-              <div
-                className={cn(
-                  "prose-sm max-w-none",
-                  "text-sm leading-relaxed",
-                  "space-y-4",
-                  "[&_ul]:space-y-3",
-                  "[&_ul]:my-4",
-                  "[&_p]:leading-relaxed",
-                  "[&_p:last-child]:mb-0",
-                  "[&_strong]:font-semibold",
-                  "[&_strong]:text-foreground/90"
-                )}
-              >
-                <ReactMarkdown 
-                  remarkPlugins={[remarkGfm]}
-                  components={MarkdownComponents}
-                >
-                  {message.content}
-                </ReactMarkdown>
-              </div>
-            </div>
+      <div className="flex flex-col">
+        <div
+          className={cn(
+            'message-container overflow-hidden text-sm shadow-md',
+            isUser 
+              ? 'bg-gradient-to-br from-glow-blue to-glow-purple text-white font-medium rounded-tl-lg rounded-tr-lg rounded-bl-lg' 
+              : 'bg-card/95 border border-border/50 text-white rounded-tl-lg rounded-tr-lg rounded-br-lg'
           )}
+        >
+          <div className={isUser ? "message-content p-1" : "message-content p-3"}>
+            {isUser ? (
+              <p className="whitespace-pre-wrap break-words leading-relaxed">
+                {message.content}
+              </p>
+            ) : (
+              <div className="prose prose-sm max-w-none space-y-4">
+                <div
+                  className={cn(
+                    "prose-sm max-w-none",
+                    "text-sm leading-relaxed",
+                    "space-y-4",
+                    "[&_ul]:space-y-3",
+                    "[&_ul]:my-4",
+                    "[&_p]:leading-relaxed",
+                    "[&_p:last-child]:mb-0",
+                    "[&_strong]:font-semibold",
+                    "[&_strong]:text-foreground/90"
+                  )}
+                >
+                  <ReactMarkdown 
+                    remarkPlugins={[remarkGfm]}
+                    components={MarkdownComponents}
+                  >
+                    {message.content}
+                  </ReactMarkdown>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         
-        {/* Add copy button for AI responses */}
+        {/* Add copy button for AI responses - outside and below the message */}
         {!isUser && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="copy-button"
-            onClick={() => {
-              navigator.clipboard.writeText(message.content);
-              toast.success("Message copied to clipboard");
-            }}
-          >
-            <Copy className="h-3.5 w-3.5" />
-          </Button>
+          <div className="w-full flex justify-start mt-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 p-0 text-foreground/50 bg-transparent hover:bg-[rgba(var(--glow-cyan-rgb),0.1)] hover:text-[rgb(var(--glow-cyan-rgb))] transition-colors rounded-sm"
+              onClick={() => {
+                navigator.clipboard.writeText(message.content);
+                toast.success("Message copied to clipboard");
+              }}
+              title="Copy message"
+            >
+              <Copy className="h-2 w-2" />
+            </Button>
+          </div>
         )}
       </div>
       

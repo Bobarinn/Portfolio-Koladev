@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { BookOpenIcon, MenuIcon, XIcon } from 'lucide-react';
 import { GlowingButton } from './GlowingButton';
@@ -9,94 +9,116 @@ import { profile } from '@/data/profile';
 
 export const Header = () => {
   const [showHeader, setShowHeader] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   
-  // Immediately check the scroll position on mount
+  // Handle mounting to prevent hydration mismatch
   useEffect(() => {
-    const checkInitialPosition = () => {
-      const currentScrollY = window.scrollY;
-      // Show header if we're already scrolled past the threshold
-      if (currentScrollY > 100) {
+    setMounted(true);
+  }, []);
+  
+  // Set up scroll listener after component is mounted
+  useEffect(() => {
+    if (!mounted) return;
+    
+    const handleScroll = () => {
+      // Show header when scrolled down by any amount
+      if (window.scrollY > 50) {
         setShowHeader(true);
+      } else {
+        setShowHeader(false);
       }
     };
     
-    checkInitialPosition();
-  }, []);
-  
-  const handleScroll = useCallback(() => {
-    const currentScrollY = window.scrollY;
+    // Check initial position
+    handleScroll();
     
-    // Determine whether to show/hide header based on scroll position
-    if (currentScrollY > 100) {
-      setShowHeader(true);
-    } else {
-      setShowHeader(false);
-    }
-    
-    setLastScrollY(currentScrollY);
-  }, []);
-  
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
+    // Add event listener
+    window.addEventListener('scroll', handleScroll, { passive: true });
     
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [lastScrollY, handleScroll]);
+  }, [mounted]);
   
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    // Close mobile menu first
     setMobileMenuOpen(false);
+    
+    // Small delay to ensure menu is closed before scrolling
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }, 50);
   };
   
   const scrollToProjects = () => {
-    const section = document.getElementById('projects');
-    if (section) {
-      const sectionTop = section.offsetTop;
-      window.scrollTo({
-        top: sectionTop - 100, // Adjust for header height
-        behavior: 'smooth'
-      });
-    }
+    // Close mobile menu first
     setMobileMenuOpen(false);
+    
+    // Small delay to ensure menu is closed before scrolling
+    setTimeout(() => {
+      const section = document.getElementById('projects');
+      if (section) {
+        // Use scrollIntoView for more reliable scrolling on mobile
+        section.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    }, 50);
   };
   
   const scrollToSideQuests = () => {
-    const section = document.getElementById('side-quests');
-    if (section) {
-      const sectionTop = section.offsetTop;
-      window.scrollTo({
-        top: sectionTop - 100, // Adjust for header height
-        behavior: 'smooth'
-      });
-    }
+    // Close mobile menu first
     setMobileMenuOpen(false);
+    
+    // Small delay to ensure menu is closed before scrolling
+    setTimeout(() => {
+      const section = document.getElementById('side-quests');
+      if (section) {
+        // Use scrollIntoView for more reliable scrolling on mobile
+        section.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    }, 50);
   };
   
   const scrollToContact = () => {
-    const section = document.getElementById('contact');
-    if (section) {
-      const sectionTop = section.offsetTop;
-      window.scrollTo({
-        top: sectionTop - 100, // Adjust for header height
-        behavior: 'smooth'
-      });
-    }
+    // Close mobile menu first
     setMobileMenuOpen(false);
+    
+    // Small delay to ensure menu is closed before scrolling
+    setTimeout(() => {
+      const section = document.getElementById('contact');
+      if (section) {
+        // Use scrollIntoView for more reliable scrolling on mobile
+        section.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    }, 50);
   };
   
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
+  // Don't render anything on server or during hydration to prevent mismatch
+  if (!mounted) {
+    return null;
+  }
+
   return (
     <header 
-      className={`sticky top-0 left-0 right-0 z-50 ${showHeader ? 'opacity-100' : 'opacity-0 pointer-events-none'} transition-opacity duration-300`}
+      className={`fixed top-0 left-0 right-0 w-full z-50 ${
+        showHeader ? 'translate-y-0 opacity-100' : 'translate-y-[-100%] opacity-0'
+      } transition-all duration-300`}
     >
       <div className="relative">
         {/* Glow effect behind the header */}
@@ -105,7 +127,7 @@ export const Header = () => {
         {/* Header content */}
         <div className="relative z-10 container mx-auto px-4 py-2 flex justify-between items-center">
           {/* Logo & Brand */}
-          <div onClick={scrollToTop}>
+          <div onClick={scrollToTop} className="cursor-pointer">
             <AnimatedLogo hideDomainName={true} className="md:hidden" />
             <AnimatedLogo className="hidden md:flex" />
           </div>

@@ -751,27 +751,6 @@ button:is(.text-glow-purple, .border-glow-purple):hover,
   position: relative;
 }
 
-.copy-button {
-  position: absolute;
-  top: 0.5rem;
-  right: -2.5rem;
-  opacity: 0;
-  transition: all 0.2s ease;
-  color: rgba(var(--glow-cyan-rgb), 0.6);
-  background: transparent;
-  padding: 0.25rem;
-  border-radius: 4px;
-}
-
-.message-container:hover .copy-button {
-  opacity: 1;
-}
-
-.copy-button:hover {
-  color: rgb(var(--glow-cyan-rgb));
-  background: rgba(var(--glow-cyan-rgb), 0.1);
-}
-
 /* Improved List Styling */
 .markdown-content ul {
   list-style-type: disc !important;
@@ -863,5 +842,54 @@ button:is(.text-glow-purple, .border-glow-purple):hover,
   }
   100% {
     background-position: -200% center;
+  }
+}
+
+/* Add global overflow control for mobile */
+html, body, #__next, main {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+/* ANIMATION OPTIMIZATION FOR MOBILE */
+@media (max-width: 768px) {
+  /* Disable or simplify heavy animations on mobile */
+  .grid-background .grid {
+    animation: none;
+  }
+  
+  .grid-background::after {
+    animation: none;
+    opacity: 0.1;
+  }
+  
+  .grid-background::before {
+    animation: none;
+    opacity: 0.3;
+  }
+  
+  .orb-0, .orb-1, .orb-2, .orb-3, .orb-4 {
+    animation: none !important;
+    opacity: 0.2;
+  }
+  
+  /* Reduce the number of particles/dots on mobile */
+  .tech-dots .dot {
+    display: none;
+  }
+  
+  .tech-dots .dot:nth-child(-n+5) {
+    display: block; /* Only show first 5 dots */
+  }
+  
+  /* Simplify pulse animations */
+  .animate-pulse {
+    animation-duration: 4s !important;
+  }
+  
+  /* Reduce or disable other intensive animations */
+  .shimmer-skill, .ice-shimmer, .frost-overlay {
+    animation: none;
   }
 }

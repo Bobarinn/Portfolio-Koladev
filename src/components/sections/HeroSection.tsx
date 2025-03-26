@@ -14,30 +14,59 @@ export const HeroSection = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Mount state to prevent hydration mismatch
+  // Mount state to prevent hydration mismatch and check for mobile
   useEffect(() => {
     setIsMounted(true);
     
-    // Show profile picture after a delay
+    // Check if mobile device based on screen width
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Initial check
+    checkMobile();
+    
+    // Add listener for resize
+    window.addEventListener('resize', checkMobile);
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
+
+  // Set up the delay for showing profile image after determining if mobile
+  useEffect(() => {
+    if (!isMounted) return;
+    
+    // Show profile picture after a delay (shorter on mobile)
     const timer = setTimeout(() => {
       setShowProfile(true);
-    }, 1500);
-    
-    return () => clearTimeout(timer);
-  }, []);
+    }, isMobile ? 800 : 1500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [isMobile, isMounted]);
 
   const handleScrollToProjects = () => {
     const projectsSection = document.getElementById('projects');
     if (projectsSection) {
-      projectsSection.scrollIntoView({ behavior: 'smooth' });
+      projectsSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
     }
   };
 
   const handleScrollToContact = () => {
     const contactSection = document.getElementById('contact');
     if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth' });
+      contactSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
     }
   };
 
@@ -53,7 +82,7 @@ export const HeroSection = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2,
+        staggerChildren: isMobile ? 0.1 : 0.2, // Faster stagger on mobile
       },
     },
   };
@@ -64,24 +93,26 @@ export const HeroSection = () => {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.8,
+        duration: isMobile ? 0.5 : 0.8, // Shorter animation on mobile
         ease: [0.22, 1, 0.36, 1],
       },
     },
   };
 
   // Pre-calculate dot positions and sizes with reduced count for better performance
-  const dotProps = [...Array(12)].map((_, i) => {
+  // Use fewer dots on mobile
+  const dotCount = isMobile ? 5 : 12;
+  const dotProps = [...Array(dotCount)].map((_, i) => {
     // Use deterministic seeds for positioning to prevent hydration errors
     const idx = i + 1;
     return {
       key: `dot-${i}`,
       className: `dot dot-${i % 3}`,
       style: {
-        // Use consistent syntax for style properties (all percentages or all decimals)
-        left: `${(idx * 7) % 100}%`,
-        top: `${(idx * 9) % 100}%`,
-        width: `${(idx % 5) + 2}px`, 
+        // Use consistent syntax for style properties and constrain positioning to prevent overflow
+        left: `${Math.min((idx * 7) % 100, 90)}%`,
+        top: `${Math.min((idx * 9) % 100, 90)}%`,
+        width: `${(idx % 5) + 2}px`,
         height: `${(idx % 4) + 2}px`,
         opacity: 0.4,
       },
@@ -89,38 +120,42 @@ export const HeroSection = () => {
       animate: { opacity: 0.4 },
       transition: {
         duration: 0.5,
-      }
+      },
     };
   });
 
   return (
-    <section className="relative min-h-screen w-full flex flex-col justify-start items-center px-4 overflow-x-hidden pt-16 md:pt-12" ref={scrollRef}>
+    <section
+      className="relative min-h-screen w-full flex flex-col justify-start items-center px-4 overflow-x-hidden pt-16 md:pt-12"
+      ref={scrollRef}
+    >
       {/* Enhanced Background Elements - Simplified with reduced animations */}
-      <div className="absolute inset-0 z-0 max-w-full">
+      <div className="absolute inset-0 z-0 max-w-full overflow-hidden">
         {/* Static grid background */}
         <div className="grid-background max-w-full">
           <div className="grid opacity-70"></div>
         </div>
-        
+
         {/* Reduced number of glowing orbs with slower animations */}
-        <div className="glowing-orbs max-w-full">
-          {[...Array(3)].map((_, i) => (
-            <div 
-              key={`orb-${i}`} 
+        <div className="glowing-orbs max-w-full overflow-hidden">
+          {/* Even fewer orbs on mobile */}
+          {[...Array(isMobile ? 1 : 3)].map((_, i) => (
+            <div
+              key={`orb-${i}`}
               className={`orb orb-${i} opacity-60`}
-              style={{ 
+              style={{
                 animationDuration: `${30 + i * 10}s`,
-                filter: 'blur(30px)'
+                filter: 'blur(30px)',
               }}
             />
           ))}
         </div>
-        
+
         {/* Tech dots - Only render on client side to prevent hydration errors */}
         {isMounted && (
-          <div className="tech-dots max-w-full">
+          <div className="tech-dots max-w-full overflow-hidden">
             {dotProps.map((props) => (
-              <motion.div 
+              <motion.div
                 key={props.key}
                 className={props.className}
                 style={props.style}
@@ -131,16 +166,17 @@ export const HeroSection = () => {
             ))}
           </div>
         )}
-        
+
         {/* Simplified circuit lines - fewer and more static */}
-        <div className="circuit-lines opacity-60 max-w-full">
-          {[...Array(5)].map((_, i) => (
-            <div 
-              key={`line-${i}`} 
+        <div className="circuit-lines opacity-60 max-w-full overflow-hidden">
+          {/* Fewer lines on mobile */}
+          {[...Array(isMobile ? 3 : 5)].map((_, i) => (
+            <div
+              key={`line-${i}`}
               className={`line line-${i}`}
               style={{
                 animationDuration: '0s', // No animation
-                opacity: 0.5
+                opacity: 0.5,
               }}
             />
           ))}
@@ -148,7 +184,7 @@ export const HeroSection = () => {
       </div>
 
       {/* Hero Content */}
-      <div className="max-w-5xl mx-auto text-center z-10 relative w-full flex flex-col h-full py-6 md:py-4 mt-[-8vh]">
+      <div className="max-w-5xl mx-auto space-y-4 text-center z-10 relative w-full flex flex-col h-full py-6 md:py-4 mt-[-8vh] overflow-hidden">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -161,67 +197,69 @@ export const HeroSection = () => {
               <motion.div
                 initial={{ scale: 0, opacity: 0 }}
                 animate={showProfile ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
-                transition={{ 
-                  type: "spring", 
-                  stiffness: 260, 
-                  damping: 20, 
-                  delay: 0.2 
+                transition={{
+                  type: 'spring',
+                  stiffness: isMobile ? 200 : 260,
+                  damping: isMobile ? 15 : 20,
+                  delay: 0.2,
                 }}
                 className="mb-4 md:mb-3 relative"
               >
                 <div className="w-16 h-16 md:w-24 md:h-24 rounded-full overflow-hidden border-4 border-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple p-1 bg-gradient-to-r from-glow-cyan/20 via-glow-blue/20 to-glow-purple/20 relative">
                   <div className="absolute inset-0 rounded-full bg-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple opacity-30 animate-pulse"></div>
                   <div className="w-full h-full rounded-full overflow-hidden relative">
-                    <Image
-                      src="/profile.jpg"
-                      alt="Kolade Abobarin"
-                      fill
-                      className="object-cover"
-                    />
+                    <Image src="/profile.jpg" alt="Kolade Abobarin" fill className="object-cover" priority />
                   </div>
                 </div>
-                
-                {/* Floating Elements Around Image - slowed down */}
-                <motion.div 
-                  className="absolute -top-2 -right-2 w-5 h-5 md:w-6 md:h-6 bg-card/30 backdrop-blur-sm rounded-full flex items-center justify-center text-glow-blue" 
-                  animate={{ y: [0, -3, 0] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <span className="text-xs">✨</span>
-                </motion.div>
-                
-                <motion.div 
-                  className="absolute -bottom-1 -left-1 w-4 h-4 md:w-5 md:h-5 bg-card/30 backdrop-blur-sm rounded-full flex items-center justify-center text-glow-purple" 
-                  animate={{ y: [0, 3, 0] }}
-                  transition={{ duration: 3, delay: 0.5, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <span className="text-xs">⚡</span>
-                </motion.div>
+
+                {/* Floating Elements Around Image - slowed down and conditionally rendered */}
+                {!isMobile && (
+                  <>
+                    <motion.div
+                      className="absolute -top-2 -right-2 w-5 h-5 md:w-6 md:h-6 bg-card/30 backdrop-blur-sm rounded-full flex items-center justify-center text-glow-blue"
+                      animate={{ y: [0, -3, 0] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <span className="text-xs">✨</span>
+                    </motion.div>
+
+                    <motion.div
+                      className="absolute -bottom-1 -left-1 w-4 h-4 md:w-5 md:h-5 bg-card/30 backdrop-blur-sm rounded-full flex items-center justify-center text-glow-purple"
+                      animate={{ y: [0, 3, 0] }}
+                      transition={{ duration: 3, delay: 0.5, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <span className="text-xs">⚡</span>
+                    </motion.div>
+                  </>
+                )}
               </motion.div>
-            
+
               <h1 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
-                <AnimatedText 
-                  text={`Hi, I'm ${profile.name}`} 
-                  className="inline-flex justify-center text-center mb-1"
-                  speed={0.04}
+                <AnimatedText
+                  text={`Hi, I'm ${profile.name}`}
+                  className="inline-flex justify-center text-center"
+                  speed={isMobile ? 0.07 : 0.05}
+                  once={true}
                 />
                 <br />
                 <span className="bg-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple bg-clip-text text-transparent animate-flow-right">
-                  <AnimatedText 
-                    text={profile.title} 
+                  <AnimatedText
+                    text={profile.title}
                     className="inline-flex justify-center text-center"
-                    speed={0.04}
+                    speed={isMobile ? 0.07 : 0.05}
+                    once={true}
                   />
                 </span>
               </h1>
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <div className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto">
-                <AnimatedText 
-                  text={profile.tagline} 
+              <div className="text-base md:text-lg lg:text-2xl mb-8 text-muted-foreground max-w-2xl mx-auto">
+                <AnimatedText
+                  text={profile.tagline}
                   className="inline-flex justify-center text-center"
-                  speed={0.02}
+                  speed={isMobile ? 0.05 : 0.03}
+                  once={true}
                 />
               </div>
             </motion.div>
@@ -232,11 +270,11 @@ export const HeroSection = () => {
               </p>
             </motion.div>
           </div>
-              
-          <div className="mt-4">
+
+          <div className="mt-12">
             <motion.div variants={itemVariants}>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-2 md:gap-3 mb-3 md:mb-4">
-                <GlowingButton 
+                <GlowingButton
                   onClick={handleScrollToProjects}
                   glowColor="blue"
                   size="default"
@@ -244,8 +282,8 @@ export const HeroSection = () => {
                 >
                   View Projects
                 </GlowingButton>
-                
-                <GlowingButton 
+
+                <GlowingButton
                   onClick={handleScrollToContact}
                   variant="outline"
                   glowColor="purple"
@@ -257,7 +295,7 @@ export const HeroSection = () => {
               </div>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               variants={itemVariants}
               className="flex items-center justify-center gap-2 md:gap-3"
             >
@@ -280,4 +318,4 @@ export const HeroSection = () => {
       </div>
     </section>
   );
-}; 
+};

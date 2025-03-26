@@ -33,7 +33,24 @@ export const ChatAssistant = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [usageLimit, setUsageLimit] = useState<UsageData>({ messageCount: 0, lastReset: Date.now() });
   const [limitReached, setLimitReached] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Check for mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // 768px is a common breakpoint for mobile
+    };
+    
+    // Initial check
+    checkMobile();
+    
+    // Add resize listener
+    window.addEventListener('resize', checkMobile);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Load usage data from localStorage on mount
   useEffect(() => {
@@ -54,6 +71,19 @@ export const ChatAssistant = () => {
       }
     }
   }, []);
+  
+  // Prevent body scrolling when chat is open on mobile
+  useEffect(() => {
+    if (isMobile && isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobile, isOpen]);
 
   // Update localStorage when message count changes
   const updateUsageCount = (increment: boolean = true) => {
@@ -102,10 +132,13 @@ export const ChatAssistant = () => {
   };
 
   const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 300);
+    // On mobile, expand doesn't do anything since the chat is already full screen
+    if (!isMobile) {
+      setIsExpanded(!isExpanded);
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -224,19 +257,27 @@ export const ChatAssistant = () => {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end">
+    <div className={cn(
+      "fixed z-50 flex flex-col items-end",
+      isMobile && isOpen ? "inset-0" : "bottom-4 right-4"
+    )}>
       {/* Chat bubble */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            initial={isMobile ? { opacity: 0, y: 20 } : { opacity: 0, y: 20, scale: 0.9 }}
+            animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, y: 0, scale: 1 }}
+            exit={isMobile ? { opacity: 0, y: 20 } : { opacity: 0, y: 20, scale: 0.9 }}
             className={cn(
-              'mb-2 flex flex-col flex-1 rounded-lg border border-glow-blue/30 bg-[#0b0b19]/95 backdrop-blur-md shadow-lg',
-              isExpanded 
-                ? 'w-[400px] sm:w-[500px] md:w-[600px] min-h-[600px] max-h-[600px]' 
-                : 'w-[350px] min-h-[500px] max-h-[500px]'
+              'flex flex-col flex-1 border border-glow-blue/30 bg-[#0b0b19]/95 backdrop-blur-md shadow-lg',
+              isMobile 
+                ? 'w-full h-full rounded-none'
+                : cn(
+                  'mb-2 rounded-lg',
+                  isExpanded 
+                    ? 'w-[400px] sm:w-[500px] md:w-[600px] min-h-[600px] max-h-[600px]' 
+                    : 'w-[350px] min-h-[500px] max-h-[500px]'
+                )
             )}
           >
             {/* Chat header */}
@@ -255,17 +296,19 @@ export const ChatAssistant = () => {
                 >
                   <Trash2 size={16} />
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 w-7 p-0 text-white hover:text-white hover:bg-white/10"
-                  onClick={toggleExpand}
-                >
-                  {isExpanded ? 
-                    <Minimize2 size={16} /> : 
-                    <Maximize2 size={16} />
-                  }
-                </Button>
+                {!isMobile && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0 text-white hover:text-white hover:bg-white/10"
+                    onClick={toggleExpand}
+                  >
+                    {isExpanded ? 
+                      <Minimize2 size={16} /> : 
+                      <Maximize2 size={16} />
+                    }
+                  </Button>
+                )}
                 <Button
                   variant="ghost"
                   size="sm"
@@ -339,7 +382,7 @@ export const ChatAssistant = () => {
             </div>
 
             {/* Input form */}
-            <div className="p-3 border-t border-glow-blue/30 rounded-b-lg bg-[#0f0f24]">
+            <div className="p-3 border-t border-glow-blue/30 bg-[#0f0f24]">
               <form
                 onSubmit={handleSubmit}
                 className="flex items-stretch gap-0"
