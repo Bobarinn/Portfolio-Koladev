@@ -23,6 +23,10 @@ const nextConfig = {
     'http://localhost:3000',
     'https://*.ngrok-free.app',
     'https://*.ngrok.io',
+    'https://koladev.dev',
+    'https://www.koladev.dev',
+    'https://kangaroo-living-bison.ngrok-free.app',
+    'https://www.kangaroo-living-bison.ngrok-free.app',
   ],
 }
 
