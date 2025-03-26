@@ -126,7 +126,7 @@ export const HeroSection = () => {
 
   return (
     <section
-      className="relative min-h-screen w-full flex flex-col justify-center items-center px-4 overflow-x-hidden pt-24 md:pt-32 lg:pt-16"
+      className="relative min-h-screen w-full flex flex-col justify-center items-center px-4 overflow-x-hidden pt-24 md:pt-32 lg:pt-12"
       ref={scrollRef}
     >
       {/* Enhanced Background Elements - Simplified with reduced animations */}
@@ -184,7 +184,7 @@ export const HeroSection = () => {
       </div>
 
       {/* Hero Content */}
-      <div className="max-w-5xl mx-auto text-center z-10 relative w-full flex flex-col h-full py-8 md:py-12 lg:py-16">
+      <div className="max-w-5xl mx-auto text-center z-10 relative w-full flex flex-col h-full">
         <motion.div
           variants={containerVariants}
           initial="hidden"
