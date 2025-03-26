@@ -126,7 +126,7 @@ export const HeroSection = () => {
 
   return (
     <section
-      className="relative min-h-screen w-full flex flex-col justify-start items-center px-4 overflow-x-hidden pt-16 md:pt-12"
+      className="relative min-h-screen w-full flex flex-col justify-center items-center px-4 overflow-x-hidden pt-24 md:pt-32 lg:pt-16"
       ref={scrollRef}
     >
       {/* Enhanced Background Elements - Simplified with reduced animations */}
@@ -184,14 +184,14 @@ export const HeroSection = () => {
       </div>
 
       {/* Hero Content */}
-      <div className="max-w-5xl mx-auto space-y-4 text-center z-10 relative w-full flex flex-col h-full py-6 md:py-4 mt-[-8vh] overflow-hidden">
+      <div className="max-w-5xl mx-auto text-center z-10 relative w-full flex flex-col h-full py-8 md:py-12 lg:py-16">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
           className="flex flex-col h-full"
         >
-          <div className="space-y-2 md:space-y-3">
+          <div className="space-y-3 md:space-y-5 lg:space-y-8">
             <motion.div variants={itemVariants} className="flex flex-col items-center">
               {/* Profile Image - smaller on mobile */}
               <motion.div
@@ -203,9 +203,9 @@ export const HeroSection = () => {
                   damping: isMobile ? 15 : 20,
                   delay: 0.2,
                 }}
-                className="mb-4 md:mb-3 relative"
+                className="mb-6 md:mb-8 lg:mb-10 relative"
               >
-                <div className="w-16 h-16 md:w-24 md:h-24 rounded-full overflow-hidden border-4 border-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple p-1 bg-gradient-to-r from-glow-cyan/20 via-glow-blue/20 to-glow-purple/20 relative">
+                <div className="w-16 h-16 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-full overflow-hidden border-4 border-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple p-1 bg-gradient-to-r from-glow-cyan/20 via-glow-blue/20 to-glow-purple/20 relative">
                   <div className="absolute inset-0 rounded-full bg-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple opacity-30 animate-pulse"></div>
                   <div className="w-full h-full rounded-full overflow-hidden relative">
                     <Image src="/profile.jpg" alt="Kolade Abobarin" fill className="object-cover" priority />
@@ -254,7 +254,7 @@ export const HeroSection = () => {
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <div className="text-base md:text-lg lg:text-2xl mb-8 text-muted-foreground max-w-2xl mx-auto">
+              <div className="text-base md:text-lg lg:text-2xl mb-6 md:mb-8 lg:mb-10 text-muted-foreground max-w-2xl mx-auto">
                 <AnimatedText
                   text={profile.tagline}
                   className="inline-flex justify-center text-center"
@@ -265,15 +265,15 @@ export const HeroSection = () => {
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto mb-3 md:mb-4">
+              <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto mb-3 md:mb-6 lg:mb-8">
                 {profile.description}
               </p>
             </motion.div>
           </div>
 
-          <div className="mt-12">
+          <div className="mt-8 md:mt-12 lg:mt-16">
             <motion.div variants={itemVariants}>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 md:gap-3 mb-3 md:mb-4">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 mb-5 md:mb-8">
                 <GlowingButton
                   onClick={handleScrollToProjects}
                   glowColor="blue"
@@ -297,7 +297,7 @@ export const HeroSection = () => {
 
             <motion.div
               variants={itemVariants}
-              className="flex items-center justify-center gap-2 md:gap-3"
+              className="flex items-center justify-center gap-3 md:gap-4"
             >
               {profile.socials.map((social) => (
                 <motion.a
