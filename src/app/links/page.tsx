@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,14 +13,10 @@ import {
   ExternalLinkIcon,
   LinkedinIcon,
   Code2Icon,
-  CopyIcon,
-  BookOpenIcon,
-  TrendingUpIcon
+  BookOpenIcon
 } from 'lucide-react';
 import { profile } from '@/data/profile';
 import { projects } from '@/data/projects';
-import { GlowingButton } from '@/components/common/GlowingButton';
-import { toast } from 'sonner';
 
 // TikTok Icon component
 const TikTokIcon = ({ color = "currentColor" }) => {
@@ -33,7 +29,7 @@ const TikTokIcon = ({ color = "currentColor" }) => {
       className="h-5 w-5"
       fill="none"
       stroke={color}
-      strokeWidth="2"
+      strokeWidth="3"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
@@ -70,7 +66,7 @@ export default function LinksPage() {
     }, typingSpeed);
     
     return () => clearInterval(typing);
-  }, [mounted]);
+  }, [mounted, text]);
   
   // Get top 5 projects
   const topProjects = projects.slice(0, 5);
@@ -164,7 +160,7 @@ export default function LinksPage() {
                   {typedText}
                   <span className="inline-block h-4 w-2 bg-glow-blue ml-1 animate-blink"></span>
                 </p>
-                <p className="text-muted-foreground mt-1">// Building stuff with AI & coffee.</p>
+                <p className="text-muted-foreground mt-1">{/* Building stuff with AI & coffee. */}</p>
               </div>
             </div>
             
