@@ -177,67 +177,76 @@ export default function LinksPage() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.5 }}
-                            className="aspect-video relative rounded-md overflow-hidden mb-4"
+                            className="aspect-video relative rounded-md overflow-hidden"
                           >
-                            <Image
-                              src={topProjects[currentProjectIndex].image}
-                              alt={topProjects[currentProjectIndex].title}
-                              fill
-                              className="object-cover"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                            <div className="absolute bottom-0 left-0 right-0 p-3">
-                              <h3 className="text-white font-bold">{topProjects[currentProjectIndex].title}</h3>
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {topProjects[currentProjectIndex].tags.slice(0, 3).map((tag) => (
+                            <Link
+                              href={topProjects[currentProjectIndex].demoUrl || topProjects[currentProjectIndex].repoUrl || '#'}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block w-full h-full group"
+                            >
+                              <Image
+                                src={topProjects[currentProjectIndex].image}
+                                alt={topProjects[currentProjectIndex].title}
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent group-hover:from-black/90 transition-colors duration-300"></div>
+                              <div className="absolute bottom-0 left-0 right-0 p-3">
+                                <h3 className="text-white font-bold flex items-center">
+                                  {topProjects[currentProjectIndex].title}
+                                  <ExternalLinkIcon className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                </h3>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {topProjects[currentProjectIndex].tags.slice(0, 3).map((tag) => (
+                                    <span 
+                                      key={tag} 
+                                      className="text-xs bg-glow-blue/20 text-glow-blue px-2 py-0.5 rounded"
+                                    >
+                                      {tag}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            </Link>
+
+                            {/* Side navigation buttons */}
+                            <button 
+                              onClick={(e) => {
+                                e.preventDefault();
+                                prevProject();
+                              }}
+                              disabled={isPending}
+                              className="absolute left-2 top-1/2 transform -translate-y-1/2 p-1 rounded-full bg-black/50 hover:bg-black/70 text-white border border-white/20 transition-colors z-10"
+                              aria-label="Previous project"
+                            >
+                              <ChevronLeftIcon className="h-5 w-5" />
+                            </button>
+                            
+                            <button 
+                              onClick={(e) => {
+                                e.preventDefault();
+                                nextProject();
+                              }}
+                              disabled={isPending}
+                              className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 rounded-full bg-black/50 hover:bg-black/70 text-white border border-white/20 transition-colors z-10"
+                              aria-label="Next project"
+                            >
+                              <ChevronRightIcon className="h-5 w-5" />
+                            </button>
+                            
+                            {/* Indicator dots */}
+                            <div className="absolute bottom-0 left-0 right-0 flex justify-center pb-1 z-10">
+                              <div className="flex gap-1">
+                                {topProjects.map((_, index) => (
                                   <span 
-                                    key={tag} 
-                                    className="text-xs bg-glow-blue/20 text-glow-blue px-2 py-0.5 rounded"
-                                  >
-                                    {tag}
-                                  </span>
+                                    key={index} 
+                                    className={`w-1.5 h-1.5 rounded-full ${index === currentProjectIndex ? 'bg-white' : 'bg-white/40'}`}
+                                  />
                                 ))}
                               </div>
                             </div>
                           </motion.div>
-                          
-                          {/* Navigation controls */}
-                          <div className="flex justify-between items-center">
-                            <button 
-                              onClick={prevProject} 
-                              disabled={isPending}
-                              className="p-2 rounded-full bg-card/50 border border-border/30 hover:bg-card/70 text-foreground"
-                            >
-                              <ChevronLeftIcon className="h-4 w-4" />
-                            </button>
-                            
-                            <span className="text-sm text-muted-foreground">
-                              {currentProjectIndex + 1} / {topProjects.length}
-                            </span>
-                            
-                            <button 
-                              onClick={nextProject}
-                              disabled={isPending}
-                              className="p-2 rounded-full bg-card/50 border border-border/30 hover:bg-card/70 text-foreground"
-                            >
-                              <ChevronRightIcon className="h-4 w-4" />
-                            </button>
-                          </div>
-                          
-                          {/* View project button */}
-                          <div className="mt-4 text-center">
-                            <GlowingButton
-                              href={topProjects[currentProjectIndex].demoUrl || topProjects[currentProjectIndex].repoUrl || '#'}
-                              size="sm"
-                              glowColor="blue"
-                              className="w-full"
-                            >
-                              <span className="flex items-center justify-center gap-2">
-                                <ExternalLinkIcon className="h-4 w-4" />
-                                View Project
-                              </span>
-                            </GlowingButton>
-                          </div>
                         </div>
                       </div>
                     </motion.div>
@@ -295,7 +304,7 @@ export default function LinksPage() {
                   href="https://github.com/Bobarinn/Portfolio-Koladev"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center p-3 hover:bg-card/70 transition-colors border-b border-border/30"
+                  className="flex items-center p-3 hover:bg-card/70 transition-colors"
                 >
                   <span className="text-glow-cyan mr-2">
                     <Code2Icon className="h-5 w-5" />
@@ -304,30 +313,16 @@ export default function LinksPage() {
                   <ExternalLinkIcon className="h-4 w-4 ml-auto text-muted-foreground" />
                 </Link>
                 
-                <div className="p-3 space-y-2">
-                  <div className="flex gap-2">
-                    <Link 
-                      href="https://github.com/Bobarinn/Portfolio-Koladev/fork"
-                      target="_blank"
-                      rel="noopener noreferrer" 
-                      className="flex-1 text-center text-sm bg-card/70 hover:bg-card/90 px-3 py-2 rounded border border-border/30 transition-colors"
-                    >
-                      Fork Project
-                    </Link>
-                    <button 
-                      onClick={() => {
-                        navigator.clipboard.writeText('git clone https://github.com/Bobarinn/Portfolio-Koladev.git');
-                        toast?.success?.("Clone command copied to clipboard!");
-                      }}
-                      className="flex-1 flex items-center justify-center gap-1 text-sm bg-card/70 hover:bg-card/90 px-3 py-2 rounded border border-border/30 transition-colors"
-                    >
-                      <CopyIcon className="h-3 w-3" />
-                      Copy Clone Command
-                    </button>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Your contributions are welcome! Pull requests appreciated.
-                  </p>
+                <div className="p-3 pt-0">
+                  <Link 
+                    href="https://github.com/Bobarinn/Portfolio-Koladev/fork"
+                    target="_blank"
+                    rel="noopener noreferrer" 
+                    className="w-full flex items-center justify-center gap-1 text-sm bg-card/70 hover:bg-card/90 px-3 py-2 mt-3 rounded border border-border/30 transition-colors"
+                  >
+                    <GithubIcon className="h-3 w-3 mr-1" />
+                    Fork Project
+                  </Link>
                 </div>
               </div>
               
