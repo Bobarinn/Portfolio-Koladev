@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpenIcon, MenuIcon, XIcon } from 'lucide-react';
+import { BookOpenIcon, MenuIcon, XIcon, LinkIcon } from 'lucide-react';
 import { GlowingButton } from './GlowingButton';
 import { AnimatedLogo } from './AnimatedLogo';
 import { profile } from '@/data/profile';
+import Link from 'next/link';
 
 export const Header = () => {
   const [showHeader, setShowHeader] = useState(false);
@@ -152,6 +153,13 @@ export const Header = () => {
             >
               Contact
             </button>
+            <Link 
+              href="/links" 
+              className="text-light-text hover:text-glow-blue transition-colors font-medium flex items-center"
+            >
+              <LinkIcon className="h-4 w-4 mr-1" />
+              Links
+            </Link>
             <GlowingButton href={profile.calendlyUrl}>
               <span className="flex items-center">
                 <BookOpenIcon className="w-4 h-4 mr-2" />
@@ -205,6 +213,13 @@ export const Header = () => {
               >
                 Contact
               </button>
+              <Link 
+                href="/links"
+                className="py-3 px-4 text-light-text hover:text-glow-blue transition-colors font-medium border-b border-muted-foreground/10 flex items-center"
+              >
+                <LinkIcon className="h-4 w-4 mr-2" />
+                Links
+              </Link>
               <div className="py-2 px-4">
                 <GlowingButton href={profile.calendlyUrl} className="w-full justify-center">
                   <span className="flex items-center">
