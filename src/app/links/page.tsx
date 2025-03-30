@@ -20,6 +20,7 @@ import {
 import { profile } from '@/data/profile';
 import { projects } from '@/data/projects';
 import { GlowingButton } from '@/components/common/GlowingButton';
+import { toast } from 'sonner';
 
 export default function LinksPage() {
   const [mounted, setMounted] = useState(false);
@@ -289,22 +290,45 @@ export default function LinksPage() {
                 <ExternalLinkIcon className="h-4 w-4 ml-auto text-muted-foreground" />
               </Link>
               
-              <div 
-                className="flex items-center p-3 rounded-md border border-border/50 bg-card/50 hover:bg-card/70 transition-colors"
-              >
-                <span className="text-glow-cyan mr-2">
-                  <Code2Icon className="h-5 w-5" />
-                </span>
-                <span>Clone this repo</span>
-                <button 
-                  onClick={() => {
-                    navigator.clipboard.writeText('git clone https://github.com/Bobarinn/Portfolio-Koladev.git');
-                  }}
-                  className="ml-auto flex items-center gap-1 text-sm bg-card/30 px-2 py-1 rounded hover:bg-card/50 transition-colors"
+              <div className="border border-border/50 rounded-md bg-card/50 overflow-hidden">
+                <Link 
+                  href="https://github.com/Bobarinn/Portfolio-Koladev"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center p-3 hover:bg-card/70 transition-colors border-b border-border/30"
                 >
-                  <CopyIcon className="h-3 w-3" />
-                  Copy
-                </button>
+                  <span className="text-glow-cyan mr-2">
+                    <Code2Icon className="h-5 w-5" />
+                  </span>
+                  <span>Contribute to this project</span>
+                  <ExternalLinkIcon className="h-4 w-4 ml-auto text-muted-foreground" />
+                </Link>
+                
+                <div className="p-3 space-y-2">
+                  <div className="flex gap-2">
+                    <Link 
+                      href="https://github.com/Bobarinn/Portfolio-Koladev/fork"
+                      target="_blank"
+                      rel="noopener noreferrer" 
+                      className="flex-1 text-center text-sm bg-card/70 hover:bg-card/90 px-3 py-2 rounded border border-border/30 transition-colors"
+                    >
+                      Fork Project
+                    </Link>
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText('git clone https://github.com/Bobarinn/Portfolio-Koladev.git');
+                        toast?.success?.("Clone command copied to clipboard!");
+                      }}
+                      className="flex-1 flex items-center justify-center gap-1 text-sm bg-card/70 hover:bg-card/90 px-3 py-2 rounded border border-border/30 transition-colors"
+                    >
+                      <CopyIcon className="h-3 w-3" />
+                      Copy Clone Command
+                    </button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Your contributions are welcome! Pull requests appreciated.
+                  </p>
+                </div>
               </div>
               
               <Link 
