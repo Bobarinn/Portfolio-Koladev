@@ -22,6 +22,22 @@ import { projects } from '@/data/projects';
 import { GlowingButton } from '@/components/common/GlowingButton';
 import { toast } from 'sonner';
 
+// TikTok Icon component
+const TikTokIcon = ({ color = "currentColor" }) => {
+  return (
+    <svg
+      fill={color}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 50 50"
+      width="100%"
+      height="100%"
+      className="h-5 w-5"
+    >
+      <path d="M41,4H9C6.243,4,4,6.243,4,9v32c0,2.757,2.243,5,5,5h32c2.757,0,5-2.243,5-5V9C46,6.243,43.757,4,41,4z M37.006,22.323 c-0.227,0.021-0.457,0.035-0.69,0.035c-2.623,0-4.928-1.349-6.269-3.388c0,5.349,0,11.435,0,11.537c0,4.709-3.818,8.527-8.527,8.527 s-8.527-3.818-8.527-8.527s3.818-8.527,8.527-8.527c0.178,0,0.352,0.016,0.527,0.027v4.202c-0.175-0.021-0.347-0.053-0.527-0.053 c-2.404,0-4.352,1.948-4.352,4.352s1.948,4.352,4.352,4.352s4.527-1.894,4.527-4.298c0-0.095,0.042-19.594,0.042-19.594h4.016 c0.378,3.591,3.277,6.425,6.901,6.685V22.323z" />
+    </svg>
+  );
+};
+
 export default function LinksPage() {
   const [mounted, setMounted] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
@@ -278,17 +294,6 @@ export default function LinksPage() {
               </Link>
               
               <Link 
-                href="#projects" 
-                className="flex items-center p-3 rounded-md border border-border/50 bg-card/50 hover:bg-card/70 transition-colors"
-              >
-                <span className="text-glow-cyan mr-2">
-                  <TrendingUpIcon className="h-5 w-5" />
-                </span>
-                <span>Live Demos</span>
-                <ExternalLinkIcon className="h-4 w-4 ml-auto text-muted-foreground" />
-              </Link>
-              
-              <Link 
                 href={profile.calendlyUrl} 
                 className="flex items-center p-3 rounded-md border border-border/50 bg-card/50 hover:bg-card/70 transition-colors"
               >
@@ -375,23 +380,7 @@ export default function LinksPage() {
                   className="p-2 rounded-full border border-border/50 bg-card/30 text-muted-foreground hover:text-glow-blue hover:border-glow-blue/50 transition-all"
                   aria-label="TikTok"
                 >
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    width="20" 
-                    height="20" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                    className="h-5 w-5"
-                  >
-                    <path d="M9 12a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/>
-                    <path d="M15 8a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
-                    <path d="M15 8v8a4 4 0 0 1-4 4"/>
-                    <line x1="15" y1="12" x2="20" y2="12"/>
-                  </svg>
+                  <TikTokIcon />
                 </a>
                 <a 
                   href={profile.calendlyUrl} 
