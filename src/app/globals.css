@@ -90,6 +90,12 @@
   --glow-shadow-cyan: 0 0 15px 2px rgba(var(--glow-cyan-rgb), 0.6);
   
   /* Ensure the font is properly defined with fallbacks */
+  --terminal-green: #4ade80;
+  --terminal-green-bright: #86efac;
+  --terminal-green-dim: #22c55e;
+  --terminal-dark: #0c0c0c;
+  --terminal-prompt: #86efac;
+  --terminal-comment: #166534;
 }
 
 /* Override Tailwind's font-sans to use Space Grotesk more directly */
@@ -892,4 +898,71 @@ html, body, #__next, main {
   .shimmer-skill, .ice-shimmer, .frost-overlay {
     animation: none;
   }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 1s infinite;
+}
+
+.text-terminal-green {
+  color: var(--terminal-green);
+}
+
+.text-terminal-prompt {
+  color: var(--terminal-prompt);
+}
+
+.text-terminal-comment {
+  color: var(--terminal-comment);
+}
+
+.bg-terminal-dark {
+  background-color: var(--terminal-dark);
+}
+
+.border-terminal-green {
+  border-color: var(--terminal-green);
+}
+
+.pixelated-avatar img, .image-pixelated {
+  image-rendering: pixelated;
+  filter: contrast(1.2) brightness(0.9);
+  border: 1px solid var(--terminal-green);
+}
+
+.command-link:hover {
+  text-shadow: 0 0 8px var(--terminal-green);
+}
+
+/* Additional terminal effects */
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.terminal-scanline::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: rgba(78, 216, 126, 0.1);
+  animation: scanline 6s linear infinite;
+  z-index: 999;
+  pointer-events: none;
+}
+
+/* Custom cursor for terminal text */
+.cursor-terminal {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='24' style='fill:none'><text font-family='monospace' font-size='20' x='0' y='20' fill='%234ade80'>_</text></svg>") 8 16, auto;
 }
