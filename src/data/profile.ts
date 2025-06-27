@@ -8,7 +8,7 @@ export const profile = {
   email: "koladedev@xophie.ai",
   location: "Remote",
   calendlyUrl: "https://calendly.com/koladeabobarin/30min",
-  resumeUrl: "/Kolade_Abobarin_Resume.pdf",
+  resumeUrl: "/resume.pdf",
   linkedinUrl: "https://www.linkedin.com/in/koladeabobarin/",
   socials: [
     {

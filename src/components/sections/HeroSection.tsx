@@ -236,7 +236,7 @@ export const HeroSection = () => {
 
               <h1 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
                 <AnimatedText
-                  text={`Hi, I&apos;m ${profile.name}`}
+                  text={`Hi, I'm ${profile.name}`}
                   className="inline-flex justify-center text-center"
                   speed={isMobile ? 0.07 : 0.05}
                   once={true}

@@ -12,10 +12,10 @@ export default function Home() {
     <main className="flex min-h-screen flex-col">
       <Header />
       <HeroSection />
+      <InternshipSection />
       <ProjectsSection />
       <SkillsSection />
       <SideQuestsSection />
-      <InternshipSection />
       <ContactSection />
       <FooterSection />
     </main>

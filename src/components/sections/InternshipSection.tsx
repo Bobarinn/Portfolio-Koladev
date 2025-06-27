@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { profile } from '@/data/profile';
 import { GlowingButton } from '@/components/common/GlowingButton';
 import { DownloadIcon, LinkedinIcon, CalendarIcon } from 'lucide-react';
+import Image from 'next/image';
 
 export const InternshipSection = () => {
   const [mounted, setMounted] = useState(false);
@@ -115,6 +116,21 @@ export const InternshipSection = () => {
               </div>
               <h3 className="text-xl font-semibold">View Résumé</h3>
             </div>
+            
+            {/* Resume Preview Image */}
+            <div className="mb-6 relative">
+              <div className="relative w-full h-64 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg overflow-hidden border border-border/30">
+                <Image 
+                  src="/resume-preview.jpg" 
+                  alt="Resume Preview" 
+                  fill 
+                  className="object-contain p-2"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
+              </div>
+            </div>
+            
             <p className="text-muted-foreground mb-6">
               Download my comprehensive résumé to see my full background, skills, and experience in product development and AI integration.
             </p>
@@ -138,8 +154,32 @@ export const InternshipSection = () => {
               <div className="w-12 h-12 bg-glow-purple/10 rounded-lg flex items-center justify-center mr-4">
                 <LinkedinIcon className="h-6 w-6 text-glow-purple" />
               </div>
-              <h3 className="text-xl font-semibold">Connect on LinkedIn</h3>
+              <h3 className="text-xl font-semibold">Professional Profile</h3>
             </div>
+            
+            {/* LinkedIn Badge */}
+            <div className="mb-6 flex justify-center">
+              {mounted && (
+                <div 
+                  className="badge-base LI-profile-badge"
+                  data-locale="en_US"
+                  data-size="large"
+                  data-theme="dark"
+                  data-type="VERTICAL"
+                  data-vanity="koladeabobarin"
+                  data-version="v1"
+                >
+                  <a 
+                    className="badge-base__link LI-simple-link"
+                    href="https://www.linkedin.com/in/koladeabobarin?trk=profile-badge"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                  </a>
+                </div>
+              )}
+            </div>
+            
             <p className="text-muted-foreground mb-6">
               See more about my background, experiences, certifications, and professional network on LinkedIn.
             </p>
@@ -150,46 +190,9 @@ export const InternshipSection = () => {
               className="w-full"
             >
               <LinkedinIcon className="h-4 w-4 mr-2" />
-              View Profile
+              View Full Profile
             </GlowingButton>
           </motion.div>
-        </motion.div>
-
-        {/* LinkedIn Badge Section */}
-        <motion.div
-          variants={itemVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          className="mt-16 text-center"
-        >
-          <h3 className="text-2xl font-semibold mb-4">Professional Profile</h3>
-          <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Get a comprehensive view of my professional background, endorsements, and network connections.
-          </p>
-          
-          <div className="flex justify-center">
-            {mounted && (
-              <div 
-                className="badge-base LI-profile-badge"
-                data-locale="en_US"
-                data-size="large"
-                data-theme="dark"
-                data-type="VERTICAL"
-                data-vanity="koladeabobarin"
-                data-version="v1"
-              >
-                <a 
-                  className="badge-base__link LI-simple-link"
-                  href="https://www.linkedin.com/in/koladeabobarin?trk=profile-badge"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Kolade Abobarin
-                </a>
-              </div>
-            )}
-          </div>
         </motion.div>
 
         {/* CTA Section */}
