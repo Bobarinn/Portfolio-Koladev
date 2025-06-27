@@ -1,0 +1,39 @@
+[
+  {
+    "sessionId": "session_1750999717861_xh6gn6whl",
+    "timestamp": "2025-06-27T04:48:38.664Z",
+    "messages": [
+      {
+        "role": "assistant",
+        "content": "Hi there! I'm Kolade's portfolio assistant. I can help you learn about his MBA/MSIS journey, internship opportunities, projects, and how we can work together. What would you like to know?",
+        "id": "welcome-message",
+        "timestamp": "2025-06-27T04:48:38.663Z"
+      },
+      {
+        "role": "user",
+        "content": "What does Kolade do?",
+        "id": "user-1750999775163",
+        "timestamp": "2025-06-27T04:49:35.163Z"
+      },
+      {
+        "role": "assistant",
+        "content": "## Kolade's Role and Expertise\n\nKolade Abobarin is a **Builder**, focusing on transforming ideas into scalable products through a combination of coding, no-code platforms, and AI technologies. Here’s a breakdown of his expertise:\n\n- **Focus:** From Idea to Scalable Product — utilizing both traditional coding and no-code solutions.\n- **Technical Skills:** \n  - **No-Code Development:** Proficient in platforms like Bubble.io for building functional applications without traditional coding.\n  - **Coding:** Skilled in JavaScript, Python, Next.js, and Firebase for custom applications and services.\n  - **AI Integration:** Expertise in using AI technologies, particularly OpenAI's API, for developing intelligent applications.\n\n- **Project Management:** Kolade has experience leading multiple product launches from concept to execution, employing strategic thinking combined with hands-on implementation skills.\n\n- **Business Acumen:** As an MBA/MSIS candidate, he merges technical expertise with strategic business thinking, focusing on product management, AI strategy, and digital transformation.\n\nIf you’d like to know more about specific projects or how he can assist with your needs, feel free to ask!",
+        "id": "assistant-1750999777561",
+        "timestamp": "2025-06-27T04:49:40.096Z"
+      },
+      {
+        "role": "user",
+        "content": "Tell me more about his MBA experience",
+        "id": "user-1750999838755",
+        "timestamp": "2025-06-27T04:50:38.755Z"
+      },
+      {
+        "role": "assistant",
+        "content": "## Kolade's MBA/MSIS Experience\n\nKolade is currently a **dual MBA/MSIS candidate at Baylor University**, where he is developing a strong foundation in both business administration and management information systems. Here are key aspects of his MBA journey:\n\n### Focus Areas\n- **Product Management:** Understanding the lifecycle of product development, from ideation to market launch.\n- **AI Strategy:** Exploring how artificial intelligence can be leveraged in business for competitive advantage.\n- **Innovation:** Learning methodologies that foster creativity and rapid prototyping of new ideas.\n- **Digital Transformation:** Studying how businesses can adapt to technological changes and integrate them effectively.\n\n### Unique Value\nKolade's experience combines:\n- **Technical Expertise:** With a background in software development, he brings hands-on coding and development skills to the table.\n- **Strategic Thinking:** His MBA studies enhance his ability to think critically about business challenges and solutions.\n\n### Career Transition\nKolade is in the process of transitioning from a technical role in software development to a more strategic role in business strategy and product leadership. His education is equipping him with the necessary tools to bridge the gap between technical execution and business strategy.\n\n### Internship Aspirations\nKolade is actively seeking **Summer 2026 MBA internship opportunities** in roles such as:\n- Product Management\n- AI Strategy\n- Innovation\n- Digital Transformation\n\nHe aims to leverage his unique combination of technical and business skills in tech companies, consulting firms, startups, or enterprise software.\n\nIf you have any specific questions about his MBA experience or how it relates to potential collaboration, feel free to ask!",
+        "id": "assistant-1750999839984",
+        "timestamp": "2025-06-27T04:50:45.223Z"
+      }
+    ],
+    "isActive": true
+  }
+]

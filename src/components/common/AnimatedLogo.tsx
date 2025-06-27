@@ -126,7 +126,7 @@ export const AnimatedLogo = ({
         </AnimatePresence>
       </div>
       {!hideDomainName && (
-        <h3 className="text-lg font-bold group-hover:text-glow-blue transition-colors duration-300">koladev.dev</h3>
+        <h3 className="text-lg font-bold group-hover:text-glow-blue transition-colors duration-300">kolade.pro</h3>
       )}
     </div>
   );

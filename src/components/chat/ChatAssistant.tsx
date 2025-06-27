@@ -5,23 +5,37 @@ import { Message } from './Message';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Avatar } from '@/components/ui/avatar';
-import { MessageSquareIcon, X, Send, Maximize2, Minimize2, Trash2, AlertCircle } from 'lucide-react';
+import { MessageSquareIcon, X, Send, Maximize2, Minimize2, Trash2, AlertCircle, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 // Define message limit constants
 const MAX_MESSAGES_PER_SESSION = 25;
 const LOCAL_STORAGE_KEY = 'portfolio_chat_usage';
+const CHAT_HISTORY_KEY = 'portfolio_chat_history';
 
 type MessageType = {
   role: 'user' | 'assistant';
   content: string;
-  id?: string; // Adding an id to track messages more reliably
+  id?: string;
+  timestamp?: string;
 };
 
 type UsageData = {
   messageCount: number;
   lastReset: number;
+};
+
+type ChatSession = {
+  sessionId: string;
+  timestamp: string;
+  messages: MessageType[];
+  isActive: boolean;
 };
 
 export const ChatAssistant = () => {
@@ -34,21 +48,42 @@ export const ChatAssistant = () => {
   const [usageLimit, setUsageLimit] = useState<UsageData>({ messageCount: 0, lastReset: Date.now() });
   const [limitReached, setLimitReached] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [currentSessionId, setCurrentSessionId] = useState<string>('');
+  const [chatHistory, setChatHistory] = useState<ChatSession[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Generate session ID
+  const generateSessionId = () => {
+    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  };
+
+  // Load chat history from localStorage
+  useEffect(() => {
+    const storedHistory = localStorage.getItem(CHAT_HISTORY_KEY);
+    if (storedHistory) {
+      try {
+        const parsedHistory = JSON.parse(storedHistory) as ChatSession[];
+        setChatHistory(parsedHistory);
+      } catch (error) {
+        console.error('Error parsing chat history:', error);
+      }
+    }
+  }, []);
+
+  // Save chat history to localStorage
+  const saveChatHistory = (newHistory: ChatSession[]) => {
+    localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(newHistory));
+    setChatHistory(newHistory);
+  };
 
   // Check for mobile screen size
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768); // 768px is a common breakpoint for mobile
+      setIsMobile(window.innerWidth < 768);
     };
     
-    // Initial check
     checkMobile();
-    
-    // Add resize listener
     window.addEventListener('resize', checkMobile);
-    
-    // Cleanup
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -58,7 +93,6 @@ export const ChatAssistant = () => {
     if (storedUsage) {
       const parsedUsage = JSON.parse(storedUsage) as UsageData;
       
-      // Reset count if it's been more than 7 days
       const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
       if (Date.now() - parsedUsage.lastReset > oneWeekMs) {
         const resetUsage = { messageCount: 0, lastReset: Date.now() };
@@ -106,33 +140,89 @@ export const ChatAssistant = () => {
   const toggleChat = () => {
     setIsOpen(!isOpen);
     
-    // Add initial welcome message if opening with no messages
     if (!isOpen && messages.length === 0) {
-      showWelcomeMessage();
+      const sessionId = generateSessionId();
+      setCurrentSessionId(sessionId);
+      showWelcomeMessage(sessionId);
     }
   };
 
-  const showWelcomeMessage = () => {
+  const showWelcomeMessage = (sessionId: string) => {
     setIsTyping(true);
     setTimeout(() => {
       const welcomeMessage: MessageType = {
         role: 'assistant',
-        content: "Hi there! I'm Kolade's portfolio assistant. How can I help you today?",
-        id: 'welcome-message'
+        content: "Hi there! I'm Kolade's portfolio assistant. I can help you learn about his MBA/MSIS journey, internship opportunities, projects, and how we can work together. What would you like to know?",
+        id: 'welcome-message',
+        timestamp: new Date().toISOString()
       };
       setMessages([welcomeMessage]);
+      
+      // Save to chat history
+      const newSession: ChatSession = {
+        sessionId,
+        timestamp: new Date().toISOString(),
+        messages: [welcomeMessage],
+        isActive: true
+      };
+      saveChatHistory([...chatHistory, newSession]);
+      
       setIsTyping(false);
     }, 800);
   };
 
   const resetChat = () => {
+    // Mark current session as inactive
+    if (currentSessionId) {
+      const updatedHistory = chatHistory.map(session => 
+        session.sessionId === currentSessionId 
+          ? { ...session, isActive: false }
+          : session
+      );
+      saveChatHistory(updatedHistory);
+    }
+    
     setMessages([]);
-    showWelcomeMessage();
-    // Note: This doesn't reset the usage limit
+    const newSessionId = generateSessionId();
+    setCurrentSessionId(newSessionId);
+    showWelcomeMessage(newSessionId);
+  };
+
+  const exportChatHistory = () => {
+    const dataStr = JSON.stringify(chatHistory, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `chat_history_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const exportChatHistoryAsExcel = async () => {
+    try {
+      const response = await fetch('/api/export-chat');
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `chat_history_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      } else {
+        console.error('Failed to export chat history');
+      }
+    } catch (error) {
+      console.error('Error exporting chat history:', error);
+    }
   };
 
   const toggleExpand = () => {
-    // On mobile, expand doesn't do anything since the chat is already full screen
     if (!isMobile) {
       setIsExpanded(!isExpanded);
       setTimeout(() => {
@@ -145,46 +235,31 @@ export const ChatAssistant = () => {
     setInput(e.target.value);
   };
 
-  // Process message content to ensure Calendly links are properly formatted
-  const processMessageContent = (content: string): string => {
-    // Look for markdown links that contain calendly URLs but might not be rendered correctly
-    const linkRegex = /\[(.*?)\]\((https?:\/\/calendly\.com\/[^)]+)\)/g;
-    return content.replace(linkRegex, (match, text, url) => {
-      // Ensure there's a space before the link if it's not at the start of the text
-      // This helps ReactMarkdown properly parse the link
-      return ` [${text}](${url}) `;
-    });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (input.trim() === '' || isLoading || limitReached) return;
     
-    // Create user message with a unique ID
     const userMessage: MessageType = {
       role: 'user',
       content: input.trim(),
-      id: `user-${Date.now()}`
+      id: `user-${Date.now()}`,
+      timestamp: new Date().toISOString()
     };
     
-    // Add the user message to chat
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
     setIsTyping(true);
     
     try {
-      // Update usage count before sending the message
       updateUsageCount();
       
-      // Create messages array for API request (strip IDs as they're not needed for API)
       const apiMessages = [
         ...messages.map(({ role, content }) => ({ role, content })),
         { role: userMessage.role, content: userMessage.content }
       ];
       
-      // Send to API
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -192,6 +267,7 @@ export const ChatAssistant = () => {
         },
         body: JSON.stringify({
           messages: apiMessages,
+          sessionId: currentSessionId,
         }),
       });
       
@@ -199,14 +275,12 @@ export const ChatAssistant = () => {
         throw new Error(response.statusText);
       }
       
-      // Create a placeholder for assistant response with unique ID
       const assistantMessageId = `assistant-${Date.now()}`;
       setMessages(prev => [
         ...prev,
-        { role: 'assistant', content: '', id: assistantMessageId }
+        { role: 'assistant', content: '', id: assistantMessageId, timestamp: new Date().toISOString() }
       ]);
       
-      // Read the streaming response
       const reader = response.body!.getReader();
       const decoder = new TextDecoder();
       
@@ -220,11 +294,9 @@ export const ChatAssistant = () => {
             break;
           }
           
-          // Decode and accumulate the chunk of text
           const chunk = decoder.decode(value, { stream: true });
           assistantResponse += chunk;
           
-          // Update the message with the accumulated response
           setMessages(prev => {
             return prev.map(msg => 
               msg.id === assistantMessageId
@@ -234,20 +306,36 @@ export const ChatAssistant = () => {
           });
         }
       } finally {
-        // Make sure to close the reader
         reader.releaseLock();
       }
+      
+      // Update chat history with new messages
+      const assistantMsg: MessageType = {
+        role: 'assistant',
+        content: assistantResponse,
+        id: assistantMessageId,
+        timestamp: new Date().toISOString()
+      };
+      const updatedHistory = chatHistory.map(session => 
+        session.sessionId === currentSessionId 
+          ? { 
+              ...session, 
+              messages: [...session.messages, userMessage as MessageType, assistantMsg as MessageType]
+            }
+          : session
+      );
+      saveChatHistory(updatedHistory);
       
       setIsTyping(false);
     } catch (error) {
       console.error('Error sending message:', error);
-      // Add an error message
       setMessages(prev => [
         ...prev,
         { 
           role: 'assistant', 
           content: 'Sorry, I encountered an error. Please try again later.',
-          id: `error-${Date.now()}`
+          id: `error-${Date.now()}`,
+          timestamp: new Date().toISOString()
         }
       ]);
       setIsTyping(false);
@@ -284,9 +372,35 @@ export const ChatAssistant = () => {
             <div className="flex items-center justify-between border-b border-glow-blue/30 bg-gradient-to-r from-glow-blue/40 to-glow-purple/40 px-4 py-3 shadow-md">
               <div className="flex items-center gap-2">
                 <MessageSquareIcon size={18} className="text-glow-cyan" />
-                <h3 className="font-medium text-white">Portfolio Assistant</h3>
+                <h3 className="font-medium text-white">MBA Portfolio Assistant</h3>
               </div>
               <div className="flex items-center gap-1">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 w-7 p-0 text-white hover:text-white hover:bg-white/10"
+                      title="Export chat history"
+                    >
+                      <Download size={16} />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="bg-card/95 backdrop-blur-sm border border-border/50">
+                    <DropdownMenuItem 
+                      onClick={exportChatHistory}
+                      className="text-white hover:bg-glow-blue/20 cursor-pointer"
+                    >
+                      Export as JSON
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={exportChatHistoryAsExcel}
+                      className="text-white hover:bg-glow-blue/20 cursor-pointer"
+                    >
+                      Export as Excel (CSV)
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -320,112 +434,59 @@ export const ChatAssistant = () => {
               </div>
             </div>
 
-            {/* Messages container */}
-            <div className="flex-1 overflow-y-auto p-3 scrollbar-thin scrollbar-thumb-glow-blue/20 scrollbar-track-transparent bg-[#0b0b19]">
-              {messages.length === 0 && !isTyping ? (
-                <div className="flex h-full flex-col items-center justify-center p-6 text-center">
-                  <div className="rounded-full bg-glow-blue/10 p-4 mb-4">
-                    <MessageSquareIcon size={32} className="text-glow-blue/70" />
+            {/* Chat messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {messages.map((message) => (
+                <Message key={message.id} message={message} />
+              ))}
+              
+              {isTyping && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-glow-cyan rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-glow-cyan rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-glow-cyan rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                   </div>
-                  <p className="text-sm font-medium text-white mb-2">
-                    Hi there! I can answer questions about working with Kolade.
-                  </p>
-                  <p className="text-sm text-gray-400 max-w-[240px]">
-                    Ask me about his expertise, process, or how to book a consultation.
-                  </p>
+                  <span className="text-sm">Kolade is typing...</span>
                 </div>
-              ) : (
-                <>
-                  {messages.map((message, index) => (
-                    <Message 
-                      key={message.id || index} 
-                      message={{
-                        ...message,
-                        content: message.role === 'assistant' 
-                          ? processMessageContent(message.content)
-                          : message.content
-                      }} 
-                    />
-                  ))}
-                  
-                  {isTyping && (
-                    <div className="flex w-full items-start mb-4">
-                      <Avatar className="mr-2 h-8 w-8 border border-glow-cyan/30 bg-card/30 backdrop-blur-sm shadow-sm flex-shrink-0">
-                        <div className="bg-gradient-to-br from-glow-blue to-glow-cyan rounded-full h-full w-full flex items-center justify-center">
-                          <span className="text-white font-bold">K</span>
-                        </div>
-                      </Avatar>
-                      
-                      <div className="bg-card/95 border border-border/50 text-white rounded-tl-lg rounded-tr-lg rounded-br-lg p-3 shadow-md">
-                        <div className="typing-indicator">
-                          <span></span>
-                          <span></span>
-                          <span></span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Usage limit notification */}
-                  {limitReached && (
-                    <div className="bg-red-900/30 border border-red-500/50 text-white rounded-lg p-3 my-2 flex items-center gap-2">
-                      <AlertCircle size={16} className="text-red-400 flex-shrink-0" />
-                      <p className="text-sm">
-                        You`&apos;`ve reached the daily message limit. Please come back tomorrow to continue chatting.
-                      </p>
-                    </div>
-                  )}
-                  
-                  <div ref={messagesEndRef} className="h-2" />
-                </>
               )}
+              
+              <div ref={messagesEndRef} />
             </div>
 
-            {/* Input form */}
-            <div className="p-3 border-t border-glow-blue/30 bg-[#0f0f24]">
-              <form
-                onSubmit={handleSubmit}
-                className="flex items-stretch gap-0"
-              >
-                <div className="flex-1 relative rounded-l-md overflow-hidden">
-                  <Textarea
-                    value={input}
-                    onChange={handleInputChange}
-                    placeholder={limitReached ? "Message limit reached" : "Type your message..."}
-                    className="min-h-10 h-10 py-2 max-h-32 w-full bg-[#090919] text-white border-glow-blue/20 focus-visible:border-glow-blue/50 focus-visible:ring-glow-blue/20 placeholder:text-gray-500 resize-none border-r-0 rounded-r-none rounded-l-md"
-                    rows={1}
-                    disabled={limitReached}
-                    onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSubmit(e as React.FormEvent);
-                      }
-                    }}
-                  />
+            {/* Usage limit warning */}
+            {limitReached && (
+              <div className="bg-yellow-500/10 border border-yellow-500/20 p-3 mx-4 mb-4 rounded-lg">
+                <div className="flex items-center gap-2 text-yellow-400">
+                  <AlertCircle size={16} />
+                  <span className="text-sm font-medium">Message limit reached</span>
                 </div>
+                <p className="text-xs text-yellow-300 mt-1">
+                  You&apos;ve reached the daily message limit. Please try again tomorrow or contact Kolade directly.
+                </p>
+              </div>
+            )}
+
+            {/* Chat input */}
+            <form onSubmit={handleSubmit} className="p-4 border-t border-glow-blue/30">
+              <div className="flex gap-2">
+                <Textarea
+                  value={input}
+                  onChange={handleInputChange}
+                  placeholder="Type your message..."
+                  className="flex-1 min-h-[40px] max-h-[120px] resize-none bg-background/50 border-border/50 text-white placeholder:text-muted-foreground"
+                  disabled={isLoading || limitReached}
+                />
                 <Button
                   type="submit"
                   size="sm"
-                  className="h-10 bg-gradient-to-r from-glow-blue to-glow-purple hover:from-glow-blue/90 hover:to-glow-purple/90 text-white p-2 border border-glow-blue/20 shadow-md shadow-glow-blue/20 rounded-l-none rounded-r-md"
-                  disabled={isLoading || !input.trim() || limitReached}
+                  disabled={input.trim() === '' || isLoading || limitReached}
+                  className="bg-glow-blue hover:bg-glow-blue/80 text-white"
                 >
-                  {isLoading ? (
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                  ) : (
-                    <Send size={18} />
-                  )}
+                  <Send size={16} />
                 </Button>
-              </form>
-              
-              {/* Message count indicator */}
-              {!limitReached && (
-                <div className="mt-1.5 flex justify-end">
-                  <span className="text-xs text-gray-400">
-                    {usageLimit.messageCount}/{MAX_MESSAGES_PER_SESSION} messages used this week
-                  </span>
-                </div>
-              )}
-            </div>
+              </div>
+            </form>
           </motion.div>
         )}
       </AnimatePresence>
@@ -433,12 +494,14 @@ export const ChatAssistant = () => {
       {/* Chat toggle button */}
       {!isOpen && (
         <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
           onClick={toggleChat}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-glow-blue to-glow-purple shadow-lg hover:shadow-glow-blue/30 transition-all chat-button-hover"
+          className="w-14 h-14 bg-gradient-to-r from-glow-blue to-glow-purple rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center text-white"
         >
-          <MessageSquareIcon size={24} className="text-white" />
+          <MessageSquareIcon size={24} />
         </motion.button>
       )}
     </div>

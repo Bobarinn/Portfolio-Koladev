@@ -38,7 +38,7 @@ export const FooterSection = () => {
                 Building at the intersection of No-Code, Traditional Code, and AI
               </p>
               <p className="text-xs text-glow-blue mt-1">
-                Currently available for collaboration and open to MBA internship opportunities. Let&apos;s build together!
+                {profile.aim}
               </p>
             </motion.div>
           </div>
@@ -60,7 +60,7 @@ export const FooterSection = () => {
         </div>
         
         <div className="mt-8 pt-4 border-t border-border/10 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
-          <p>&copy; {currentYear} Koladev.dev. All rights reserved.</p>
+          <p>&copy; {currentYear} kolade.pro. All rights reserved.</p>
         </div>
       </div>
     </footer>

@@ -393,7 +393,7 @@ export default function LinksPage() {
                 </a>
               </div>
               <div className="text-center text-xs text-muted-foreground mt-2">
-                <p>@{new Date().getFullYear()} koladev.dev</p>
+                <p>@{new Date().getFullYear()} kolade.pro</p>
               </div>
             </div>
           </div>

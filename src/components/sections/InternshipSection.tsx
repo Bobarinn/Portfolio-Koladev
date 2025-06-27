@@ -90,10 +90,10 @@ export const InternshipSection = () => {
             variants={itemVariants}
             className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto mb-12"
           >
-            I&apos;m actively seeking <span className="text-glow-blue font-medium">Summer 2026 MBA internship roles</span> in 
+            Seeking <span className="text-glow-blue font-medium">Summer 2026 MBA internship roles</span> in 
             <span className="text-glow-purple font-medium"> Product Management</span>, 
             <span className="text-glow-cyan font-medium"> AI Strategy</span>, or 
-            <span className="text-glow-blue font-medium"> Innovation</span>, where I can blend technical expertise with strategic thinking to deliver impact.
+            <span className="text-glow-blue font-medium"> Innovation</span>.
           </motion.p>
         </motion.div>
 
@@ -124,7 +124,7 @@ export const InternshipSection = () => {
                   src="/resume-preview.jpg" 
                   alt="Resume Preview" 
                   fill 
-                  className="object-cover"
+                  className="object-cover object-top"
                   priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
@@ -154,7 +154,7 @@ export const InternshipSection = () => {
               <div className="w-12 h-12 bg-glow-purple/10 rounded-lg flex items-center justify-center mr-4">
                 <LinkedinIcon className="h-6 w-6 text-glow-purple" />
               </div>
-              <h3 className="text-xl font-semibold">Professional Profile</h3>
+              <h3 className="text-xl font-semibold">Connect on LinkedIn</h3>
             </div>
             
             {/* LinkedIn Badge */}
@@ -208,7 +208,7 @@ export const InternshipSection = () => {
           <div className="bg-gradient-to-r from-glow-blue/10 via-glow-purple/10 to-glow-cyan/10 border border-glow-blue/20 rounded-lg p-8 max-w-3xl mx-auto">
             <h3 className="text-2xl font-semibold mb-4">Ready to Build Something Amazing?</h3>
             <p className="text-muted-foreground mb-6">
-              Currently available for collaboration and open to MBA internship opportunities. Let&apos;s build together!
+            {profile.aim}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <GlowingButton

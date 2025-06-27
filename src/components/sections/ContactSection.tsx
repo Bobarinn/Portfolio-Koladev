@@ -84,8 +84,8 @@ export const ContactSection = () => {
             <AnimatedText text="Get In Touch" className="inline-flex justify-center" />
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Have a project in mind, want to discuss a collaboration, or interested in MBA internship opportunities? 
-            Feel free to reach out and I&apos;ll get back to you as soon as possible.
+            Have a project in mind or interested in MBA internship opportunities? 
+            Let&apos;s discuss how we can work together.
           </p>
         </motion.div>
 

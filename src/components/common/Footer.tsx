@@ -16,7 +16,7 @@ export const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="flex flex-col">
-            <h3 className="text-lg font-bold mb-4">koladev.dev</h3>
+            <h3 className="text-lg font-bold mb-4">kolade.pro</h3>
             <p className="text-muted-foreground text-sm">
               No-Code Developer & AI Specialist 
               helping businesses leverage technology for growth.
@@ -74,7 +74,7 @@ export const Footer = () => {
         
         <div className="mt-8 pt-4 border-t border-border/10 flex justify-center">
           <p className="text-muted-foreground text-sm">
-            &copy; {new Date().getFullYear()} koladev.dev. All rights reserved.
+            &copy; {new Date().getFullYear()} kolade.pro. All rights reserved.
           </p>
         </div>
       </div>
