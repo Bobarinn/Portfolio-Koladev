@@ -119,12 +119,12 @@ export const InternshipSection = () => {
             
             {/* Resume Preview Image */}
             <div className="mb-6 relative">
-              <div className="relative w-full h-64 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg overflow-hidden border border-border/30">
+              <div className="relative w-full h-80 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg overflow-hidden border border-border/30">
                 <Image 
                   src="/resume-preview.jpg" 
                   alt="Resume Preview" 
                   fill 
-                  className="object-contain p-2"
+                  className="object-cover"
                   priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
@@ -159,25 +159,27 @@ export const InternshipSection = () => {
             
             {/* LinkedIn Badge */}
             <div className="mb-6 flex justify-center">
-              {mounted && (
-                <div 
-                  className="badge-base LI-profile-badge"
-                  data-locale="en_US"
-                  data-size="large"
-                  data-theme="dark"
-                  data-type="VERTICAL"
-                  data-vanity="koladeabobarin"
-                  data-version="v1"
-                >
-                  <a 
-                    className="badge-base__link LI-simple-link"
-                    href="https://www.linkedin.com/in/koladeabobarin?trk=profile-badge"
-                    target="_blank"
-                    rel="noopener noreferrer"
+              <div className="relative w-full h-80 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg overflow-hidden border border-border/30 flex items-center justify-center">
+                {mounted && (
+                  <div 
+                    className="badge-base LI-profile-badge"
+                    data-locale="en_US"
+                    data-size="large"
+                    data-theme="dark"
+                    data-type="VERTICAL"
+                    data-vanity="koladeabobarin"
+                    data-version="v1"
                   >
-                  </a>
-                </div>
-              )}
+                    <a 
+                      className="badge-base__link LI-simple-link"
+                      href="https://www.linkedin.com/in/koladeabobarin?trk=profile-badge"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                    </a>
+                  </div>
+                )}
+              </div>
             </div>
             
             <p className="text-muted-foreground mb-6">
