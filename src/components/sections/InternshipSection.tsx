@@ -1,12 +1,36 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { profile } from '@/data/profile';
 import { GlowingButton } from '@/components/common/GlowingButton';
 import { DownloadIcon, LinkedinIcon, CalendarIcon } from 'lucide-react';
 
 export const InternshipSection = () => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    
+    // Load LinkedIn badge script only on client side
+    if (typeof window !== 'undefined') {
+      const script = document.createElement('script');
+      script.src = 'https://platform.linkedin.com/badges/js/profile.js';
+      script.async = true;
+      script.defer = true;
+      script.type = 'text/javascript';
+      document.head.appendChild(script);
+      
+      return () => {
+        // Cleanup script on unmount
+        const existingScript = document.querySelector('script[src="https://platform.linkedin.com/badges/js/profile.js"]');
+        if (existingScript) {
+          existingScript.remove();
+        }
+      };
+    }
+  }, []);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -145,32 +169,27 @@ export const InternshipSection = () => {
           </p>
           
           <div className="flex justify-center">
-            <div 
-              className="badge-base LI-profile-badge"
-              data-locale="en_US"
-              data-size="large"
-              data-theme="dark"
-              data-type="VERTICAL"
-              data-vanity="koladeabobarin"
-              data-version="v1"
-            >
-              <a 
-                className="badge-base__link LI-simple-link"
-                href="https://www.linkedin.com/in/koladeabobarin?trk=profile-badge"
-                target="_blank"
-                rel="noopener noreferrer"
+            {mounted && (
+              <div 
+                className="badge-base LI-profile-badge"
+                data-locale="en_US"
+                data-size="large"
+                data-theme="dark"
+                data-type="VERTICAL"
+                data-vanity="koladeabobarin"
+                data-version="v1"
               >
-                Kolade Abobarin
-              </a>
-            </div>
+                <a 
+                  className="badge-base__link LI-simple-link"
+                  href="https://www.linkedin.com/in/koladeabobarin?trk=profile-badge"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Kolade Abobarin
+                </a>
+              </div>
+            )}
           </div>
-          
-          <script 
-            src="https://platform.linkedin.com/badges/js/profile.js" 
-            async 
-            defer 
-            type="text/javascript"
-          />
         </motion.div>
 
         {/* CTA Section */}
