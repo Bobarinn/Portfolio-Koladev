@@ -1,13 +1,15 @@
 export const profile = {
   name: "Kolade Abobarin",
   nickname: "Kay",
-  title: "Software Developer & AI Automation Specialist",
-  tagline: "From Concept to Launch in Record Time — Leveraging No-Code, Code & AI integration.",
+  title: "Builder | MBA/MSIS Candidate | Product-Driven Developer",
+  tagline: "From Idea to Scalable Product — Code, No-Code & AI",
   description: "I leverage no-code platforms, traditional coding, and advanced AI to deliver high-quality digital solutions quickly. My focus is on rapid development, fast launches, and cost-effective scalability to meet tight deadlines without sacrificing quality.",
   workSchedule: "I work 24/7, but my best hours are between 9 AM and 11 PM GMT+1. I'm available for meetings at any time. I am Open to full time role, as well as project based contracts, but that depends on if i have other engagements or not",
   email: "koladedev@xophie.ai",
   location: "Remote",
   calendlyUrl: "https://calendly.com/koladeabobarin/30min",
+  resumeUrl: "/Kolade_Abobarin_Resume.pdf",
+  linkedinUrl: "https://www.linkedin.com/in/koladeabobarin/",
   socials: [
     {
       name: "GitHub",

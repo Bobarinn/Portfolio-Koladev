@@ -84,7 +84,7 @@ export const ContactSection = () => {
             <AnimatedText text="Get In Touch" className="inline-flex justify-center" />
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Have a project in mind or want to discuss a collaboration? 
+            Have a project in mind, want to discuss a collaboration, or interested in MBA internship opportunities? 
             Feel free to reach out and I&apos;ll get back to you as soon as possible.
           </p>
         </motion.div>
@@ -158,7 +158,7 @@ export const ContactSection = () => {
           >
             <Card className="border-border/50 bg-card/30 backdrop-blur-sm w-full flex flex-col">
               <CardContent className="p-6 flex flex-col flex-grow">
-                <h3 className="text-2xl font-bold mb-6">Send a Message</h3>
+                <h3 className="text-2xl font-bold mb-6">Let&apos;s Build Something</h3>
                 
                 <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="space-y-4 flex-grow flex flex-col">
                   <div>
@@ -186,7 +186,7 @@ export const ContactSection = () => {
                     <Textarea
                       {...register('message')}
                       name="message"
-                      placeholder="Your Message"
+                      placeholder="Tell me about your project or internship opportunity..."
                       className="bg-background/50 border-border/50 h-full min-h-[120px]"
                     />
                     {errors.message && <p className="text-xs text-destructive mt-1">{errors.message.message}</p>}
@@ -211,7 +211,7 @@ export const ContactSection = () => {
                       className="w-full"
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? 'Sending...' : 'Send Message'}
+                      {isSubmitting ? 'Sending...' : 'Let&apos;s Build Something'}
                     </GlowingButton>
                     <p className="text-xs text-muted-foreground mt-2 text-center">
                       You&apos;ll receive a confirmation email with my Calendly link

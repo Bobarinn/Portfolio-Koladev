@@ -37,6 +37,9 @@ export const FooterSection = () => {
               <p className="text-sm text-muted-foreground mt-2">
                 Building at the intersection of No-Code, Traditional Code, and AI
               </p>
+              <p className="text-xs text-glow-blue mt-1">
+                Currently available for collaboration and open to MBA internship opportunities. Let&apos;s build together!
+              </p>
             </motion.div>
           </div>
           

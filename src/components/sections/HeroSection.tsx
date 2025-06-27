@@ -236,7 +236,7 @@ export const HeroSection = () => {
 
               <h1 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
                 <AnimatedText
-                  text={`Hi, I'm ${profile.name}`}
+                  text={`Hi, I&apos;m ${profile.name}`}
                   className="inline-flex justify-center text-center"
                   speed={isMobile ? 0.07 : 0.05}
                   once={true}
@@ -268,6 +268,18 @@ export const HeroSection = () => {
               <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto mb-3 md:mb-6 lg:mb-8">
                 {profile.description}
               </p>
+            </motion.div>
+
+            {/* Internship Availability Message */}
+            <motion.div variants={itemVariants}>
+              <div className="bg-gradient-to-r from-glow-blue/10 via-glow-purple/10 to-glow-cyan/10 border border-glow-blue/20 rounded-lg p-4 md:p-6 mb-6 md:mb-8 max-w-2xl mx-auto">
+                <p className="text-sm md:text-base font-medium text-glow-blue mb-2">
+                  📣 Open to Summer 2026 MBA Internships
+                </p>
+                <p className="text-xs md:text-sm text-muted-foreground">
+                  Let&apos;s build something impactful together! Seeking roles in Product Management, AI Strategy, or Innovation.
+                </p>
+              </div>
             </motion.div>
           </div>
 
