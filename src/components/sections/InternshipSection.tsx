@@ -91,7 +91,8 @@ export const InternshipSection = () => {
             className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto mb-12"
           >
             Seeking <span className="text-glow-blue font-medium">Summer 2026 MBA internship roles</span> in 
-            <span className="text-glow-purple font-medium"> Product Management</span>, 
+            <span className="text-glow-purple font-medium"> Product Management</span>,
+            <span className="text-glow-purple font-medium"> Program Management</span>,  
             <span className="text-glow-cyan font-medium"> AI Strategy</span>, or 
             <span className="text-glow-blue font-medium"> Innovation</span>.
           </motion.p>
