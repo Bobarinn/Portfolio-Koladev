@@ -208,7 +208,7 @@ export const HeroSection = () => {
                 <div className="w-16 h-16 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-full overflow-hidden border-4 border-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple p-1 bg-gradient-to-r from-glow-cyan/20 via-glow-blue/20 to-glow-purple/20 relative">
                   <div className="absolute inset-0 rounded-full bg-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple opacity-30 animate-pulse"></div>
                   <div className="w-full h-full rounded-full overflow-hidden relative">
-                    <Image src="/profile.jpg" alt="Kolade Abobarin" fill className="object-cover" priority />
+                    <Image src="/profile.jpg" alt="Kolade Abobarin" fill className="object-cover object-top" priority />
                   </div>
                 </div>
 
@@ -271,16 +271,53 @@ export const HeroSection = () => {
             </motion.div>
 
             {/* Internship Availability Message */}
-            <motion.div variants={itemVariants}>
-              <div className="bg-gradient-to-r from-glow-blue/10 via-glow-purple/10 to-glow-cyan/10 border border-glow-blue/20 rounded-lg p-4 md:p-6 mb-6 md:mb-8 max-w-2xl mx-auto">
-                <p className="text-sm md:text-base font-medium text-glow-blue mb-2">
-                  📣 Open to Summer 2026 MBA Internships
-                </p>
-                <p className="text-xs md:text-sm text-muted-foreground">
-                  Let&apos;s build something impactful together! Seeking roles in Product Management, AI Strategy, or Innovation.
-                </p>
-              </div>
-            </motion.div>
+            <div className="mb-6 md:mb-8 max-w-2xl mx-auto">
+              <motion.div 
+                className="rounded-3xl p-4 md:p-6 relative overflow-hidden"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.05) 100%)',
+                  backdropFilter: 'blur(25px) saturate(180%)',
+                  WebkitBackdropFilter: 'blur(25px) saturate(180%)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), 0 2px 16px rgba(255, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.1)'
+                }}
+                whileHover={{ 
+                  scale: 1.03,
+                  y: -5,
+                  boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(255, 255, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.5)"
+                }}
+                animate={isMounted ? {
+                  y: [0, -2, 0],
+                  scale: [1, 1.01, 1],
+                } : {}}
+                transition={{
+                  duration: 8,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                {/* Liquid shine effect */}
+                {isMounted && (
+                  <div 
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background: 'linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%)',
+                      transform: 'rotate(-45deg)',
+                      animation: 'liquidShine 6s ease-in-out infinite'
+                    }}
+                  />
+                )}
+                
+                <div className="relative z-10">
+                  <p className="text-sm md:text-base font-semibold text-glow-blue mb-2 drop-shadow-sm">
+                    📣 Open to Summer 2026 MBA Internships
+                  </p>
+                  <p className="text-xs md:text-sm text-muted-foreground/90 leading-relaxed">
+                    Let&apos;s build something impactful together! Seeking roles in Product Management, Program Manager, AI Strategy, or Innovation.
+                  </p>
+                </div>
+              </motion.div>
+            </div>
           </div>
 
           <div className="mt-8 md:mt-12 lg:mt-16">

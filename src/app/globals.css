@@ -909,6 +909,12 @@ html, body, #__next, main {
   animation: blink 1s infinite;
 }
 
+@keyframes liquidShine {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(-45deg); }
+  50% { transform: translateX(-50%) translateY(-50%) rotate(-45deg); }
+  100% { transform: translateX(100%) translateY(100%) rotate(-45deg); }
+}
+
 .text-terminal-green {
   color: var(--terminal-green);
 }

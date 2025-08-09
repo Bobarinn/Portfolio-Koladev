@@ -211,7 +211,7 @@ export const ContactSection = () => {
                       className="w-full"
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? 'Sending...' : 'Let&apos;s Build Something'}
+                      {isSubmitting ? 'Sending...' : 'Send Message'}
                     </GlowingButton>
                     <p className="text-xs text-muted-foreground mt-2 text-center">
                       You&apos;ll receive a confirmation email with my Calendly link
