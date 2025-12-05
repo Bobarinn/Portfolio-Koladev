@@ -4,6 +4,8 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 import { ChatProvider } from "@/components/chat/ChatProvider";
+import { VoiceAIPopup } from "@/components/common/VoiceAIPopup";
+
 
 // Load Space_Grotesk with all weights
 const fontSans = FontSans({
@@ -51,10 +53,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={cn("dark", fontSans.variable, fontMono.variable)}>
-      <body className="min-h-screen bg-background font-sans antialiased overflow-x-hidden">
+      <body className="min-h-screen bg-background font-sans antialiased overflow-x-hidden" suppressHydrationWarning>
         {children}
         <Toaster position="top-right" />
         <ChatProvider />
+        <VoiceAIPopup />
       </body>
     </html>
   );

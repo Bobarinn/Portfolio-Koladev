@@ -1,14 +1,46 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { sideQuests } from '@/data/sidequests';
 import { AnimatedText } from '@/components/common/AnimatedText';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { GithubIcon, ExternalLinkIcon } from 'lucide-react';
 import Image from 'next/image';
 
+interface SideQuest {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  images?: string[];
+  tags: string[];
+  demoUrl?: string;
+  repoUrl?: string;
+}
+
 export const SideQuestsSection = () => {
+  const [sideQuests, setSideQuests] = useState<SideQuest[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSideQuests = async () => {
+      try {
+        const response = await fetch('/api/data/sidequests');
+        if (response.ok) {
+          const data = await response.json();
+          setSideQuests(data);
+        }
+      } catch (error) {
+        console.error('Error fetching sidequests:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSideQuests();
+  }, []);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -37,14 +69,19 @@ export const SideQuestsSection = () => {
           </p>
         </motion.div>
 
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="space-y-12"
-        >
-          {sideQuests.map((quest, index) => (
+        {loading ? (
+          <div className="text-center py-12 text-muted-foreground">Loading sidequests...</div>
+        ) : sideQuests.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground">No sidequests found.</div>
+        ) : (
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="space-y-12"
+          >
+            {sideQuests.map((quest, index) => (
             <motion.div
               key={quest.id}
               variants={{
@@ -67,6 +104,7 @@ export const SideQuestsSection = () => {
                     src={quest.image}
                     alt={quest.title}
                     fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
                     className="object-cover"
                   />
                 </div>
@@ -106,7 +144,8 @@ export const SideQuestsSection = () => {
               </div>
             </motion.div>
           ))}
-        </motion.div>
+          </motion.div>
+        )}
       </div>
     </section>
   );

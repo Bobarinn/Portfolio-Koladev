@@ -1,12 +1,11 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import emailjs from '@emailjs/browser';
-import { profile } from '@/data/profile';
 import { AnimatedText } from '@/components/common/AnimatedText';
 import { GlowingButton } from '@/components/common/GlowingButton';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,6 +13,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { MailIcon, MapPinIcon, CalendarIcon } from 'lucide-react';
+
+interface ProfileData {
+  name: string;
+  email: string;
+  location: string;
+  calendlyUrl: string;
+}
 
 // Validation schema for form
 const formSchema = z.object({
@@ -32,9 +38,38 @@ const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || '';
 
 export const ContactSection = () => {
   const formRef = useRef<HTMLFormElement>(null);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
   });
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch('/api/data/profile');
+        if (response.ok) {
+          const data = await response.json();
+          setProfile({
+            name: data.name || 'Kolade Abobarin',
+            email: data.email || 'koladeabobarin@gmail.com',
+            location: data.location || 'Waco, Texas',
+            calendlyUrl: data.calendly_url || 'https://calendly.com/koladeabobarin/30min',
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        // Fallback data
+        setProfile({
+          name: 'Kolade Abobarin',
+          email: 'koladeabobarin@gmail.com',
+          location: 'Waco, Texas',
+          calendlyUrl: 'https://calendly.com/koladeabobarin/30min',
+        });
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const onSubmit = async (data: FormValues) => {
     try {
@@ -55,9 +90,9 @@ export const ContactSection = () => {
         {
           to_email: data.email,
           to_name: data.name,
-          from_name: profile.name,
+          from_name: profile?.name || 'Kolade Abobarin',
           message: data.message,
-          calendly_link: profile.calendlyUrl,
+          calendly_link: profile?.calendlyUrl || 'https://calendly.com/koladeabobarin/30min',
         },
         EMAILJS_PUBLIC_KEY
       );
@@ -107,8 +142,8 @@ export const ContactSection = () => {
                       <MailIcon className="h-5 w-5 mt-1 text-glow-blue" />
                       <div>
                         <h4 className="text-sm font-semibold">Email</h4>
-                        <a href={`mailto:${profile.email}`} className="text-muted-foreground hover:text-glow-blue transition-colors">
-                          {profile.email}
+                        <a href={`mailto:${profile?.email || 'koladeabobarin@gmail.com'}`} className="text-muted-foreground hover:text-glow-blue transition-colors">
+                          {profile?.email || 'koladeabobarin@gmail.com'}
                         </a>
                       </div>
                     </div>
@@ -117,7 +152,7 @@ export const ContactSection = () => {
                       <MapPinIcon className="h-5 w-5 mt-1 text-glow-purple" />
                       <div>
                         <h4 className="text-sm font-semibold">Location</h4>
-                        <p className="text-muted-foreground">{profile.location}</p>
+                        <p className="text-muted-foreground">{profile?.location || 'Waco, Texas'}</p>
                       </div>
                     </div>
 
@@ -126,7 +161,7 @@ export const ContactSection = () => {
                       <div>
                         <h4 className="text-sm font-semibold">Schedule a Meeting</h4>
                         <a 
-                          href={profile.calendlyUrl} 
+                          href={profile?.calendlyUrl || 'https://calendly.com/koladeabobarin/30min'} 
                           target="_blank" 
                           rel="noopener noreferrer"
                           className="text-muted-foreground hover:text-glow-cyan transition-colors"
@@ -202,7 +237,7 @@ export const ContactSection = () => {
                   <input 
                     type="hidden" 
                     name="calendly_link" 
-                    value={profile.calendlyUrl} 
+                    value={profile?.calendlyUrl || 'https://calendly.com/koladeabobarin/30min'} 
                   />                  
                   <div className="pt-2 mt-auto">
                     <GlowingButton

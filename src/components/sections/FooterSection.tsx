@@ -1,14 +1,53 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { profile } from '@/data/profile';
 import { GitHubLogoIcon, LinkedInLogoIcon, TwitterLogoIcon } from '@radix-ui/react-icons';
 import { CalendarIcon } from 'lucide-react';
 import { AnimatedLogo } from '@/components/common/AnimatedLogo';
 
+interface ProfileData {
+  aim: string;
+  socials: Array<{ name: string; url: string; icon: string }>;
+}
+
 export const FooterSection = () => {
   const currentYear = new Date().getFullYear();
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch('/api/data/profile');
+        if (response.ok) {
+          const data = await response.json();
+          setProfile({
+            aim: data.aim || '',
+            socials: [
+              { name: 'GitHub', url: data.github || 'https://github.com/Bobarinn', icon: 'github' },
+              { name: 'LinkedIn', url: data.linkedin || 'https://www.linkedin.com/in/koladeabobarin/', icon: 'linkedin' },
+              { name: 'Twitter', url: 'https://x.com/Kolade_Abobarin', icon: 'twitter' },
+              { name: 'Calendly', url: data.calendly_url || 'https://calendly.com/koladeabobarin/30min', icon: 'calendar' },
+            ],
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        // Fallback data
+        setProfile({
+          aim: 'Actively seeking Summer 2026 MBA internship opportunities.',
+          socials: [
+            { name: 'GitHub', url: 'https://github.com/Bobarinn', icon: 'github' },
+            { name: 'LinkedIn', url: 'https://www.linkedin.com/in/koladeabobarin/', icon: 'linkedin' },
+            { name: 'Twitter', url: 'https://x.com/Kolade_Abobarin', icon: 'twitter' },
+            { name: 'Calendly', url: 'https://calendly.com/koladeabobarin/30min', icon: 'calendar' },
+          ],
+        });
+      }
+    };
+
+    fetchProfile();
+  }, []);
   
   const iconMap: Record<string, React.ReactNode> = {
     github: <GitHubLogoIcon className="h-4 w-4" />,
@@ -38,13 +77,13 @@ export const FooterSection = () => {
                 Building at the intersection of No-Code, Traditional Code, and AI
               </p>
               <p className="text-xs text-glow-blue mt-1">
-                {profile.aim}
+                {profile?.aim}
               </p>
             </motion.div>
           </div>
           
           <div className="flex gap-4">
-            {profile.socials.map((social) => (
+            {profile?.socials.map((social) => (
               <a
                 key={social.name}
                 href={social.url}

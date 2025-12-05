@@ -1,9 +1,6 @@
 import { OpenAI } from 'openai';
 import { NextRequest } from 'next/server';
-import { profile } from '@/data/profile';
-import { projects } from '@/data/projects';
-import { skillCategories } from '@/data/skills';
-import { sideQuests } from '@/data/sidequests';
+import { getProfileServer, getProjectsServer, getSkillsServer, getSideQuestsServer } from '@/lib/data-loader';
 import { writeFile, readFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
@@ -124,34 +121,42 @@ const extractUserIntent = (messages: ChatMessage[]): string => {
 };
 
 // Function to create system prompt
-const createSystemPrompt = () => {
+const createSystemPrompt = async () => {
   if (cachedSystemPrompt) {
     return cachedSystemPrompt;
   }
 
+  // Fetch data from Supabase
+  const [profileData, projectsData, skillsData, sideQuestsData] = await Promise.all([
+    getProfileServer(),
+    getProjectsServer(),
+    getSkillsServer(),
+    getSideQuestsServer(),
+  ]);
+
   // Prepare project data
-  const projectData = projects.map(p => ({
+  const projectData = projectsData.map(p => ({
     id: p.id,
     title: p.title,
     description: p.description,
     category: p.category,
-    tags: p.tags.join(', '),
+    tags: (p.tags || []).join(', '),
     demoUrl: p.demoUrl || 'Not available',
     repoUrl: p.repoUrl || 'Not available',
   }));
 
   // Prepare skills data
-  const skillsData = skillCategories.map(category => ({
+  const skillsFormatted = skillsData.map(category => ({
     category: category.name,
     description: category.description,
-    skills: category.skills.map(skill => `${skill.name} (${skill.proficiency}/10)`).join(', ')
+    skills: category.skills.map((skill: { name: string; proficiency: number }) => `${skill.name} (${skill.proficiency}/10)`).join(', ')
   }));
 
   // Prepare sidequest data
-  const sideQuestData = sideQuests.map(sq => ({
+  const sideQuestData = sideQuestsData.map(sq => ({
     title: sq.title,
     description: sq.description,
-    tags: sq.tags.join(', '),
+    tags: (sq.tags || []).join(', '),
     demoUrl: sq.demoUrl || 'Not available',
     repoUrl: sq.repoUrl || 'Not available',
   }));
@@ -162,17 +167,17 @@ You are a helpful AI assistant for Kolade Abobarin, a Builder, MBA/MSIS Candidat
 Your role is to answer questions about Kolade and his work, help clients with their projects, and provide insights about his MBA/MSIS journey and internship opportunities.
 
 ## About Kolade:
-- **Name:** ${profile.name} (Kolade for short and preferred)
-- **Nickname:** ${profile.nickname}
-- **Title:** ${profile.title}
-- **Focus:** ${profile.tagline}
-- **Expertise:** ${profile.description}
-- **Email:** ${profile.email}
-- **Phone:** ${profile.phone}
-- **Location:** ${profile.location}
-- **Calendly:** ${profile.calendlyUrl}
-- **Socials:** ${profile.socials.map(social => `${social.name}: ${social.url}`).join(', ')}
-- **Work schedule:** ${profile.workSchedule}
+- **Name:** ${profileData?.name || 'Kolade Abobarin'} (Kolade for short and preferred)
+- **Nickname:** ${profileData?.nickname || 'Kay'}
+- **Title:** ${profileData?.title || ''}
+- **Focus:** ${profileData?.tagline || ''}
+- **Expertise:** ${profileData?.description || ''}
+- **Email:** ${profileData?.email || ''}
+- **Phone:** ${profileData?.phone || ''}
+- **Location:** ${profileData?.location || ''}
+- **Calendly:** ${profileData?.calendly_url || 'https://calendly.com/koladeabobarin/30min'}
+- **Socials:** GitHub: ${profileData?.github || 'https://github.com/Bobarinn'}, LinkedIn: ${profileData?.linkedin || 'https://www.linkedin.com/in/koladeabobarin/'}
+- **Work schedule:** ${profileData?.work_schedule || ''}
 
 ## Academic & Professional Background:
 - **Current Status:** Dual MBA/MSIS candidate at Baylor University
@@ -182,42 +187,22 @@ Your role is to answer questions about Kolade and his work, help clients with th
 - **Unique Value:** Combines technical expertise with strategic business thinking
 
 ## Education:
-${profile.resume.education.map(edu => `
-- **${edu.institution}** (${edu.location})
-  - ${edu.degree}
-  - ${edu.period}
-  ${edu.relevantCoursework ? `- Relevant Coursework: ${edu.relevantCoursework.join(', ')}` : ''}
-  ${edu.gpa ? `- GPA: ${edu.gpa}` : ''}
-`).join('')}
+(Education details are available in Kolade's profile and resume)
 
 ## Work Experience:
-${profile.resume.workExperience.map(exp => `
-- **${exp.title}** at ${exp.company} (${exp.location})
-  - ${exp.period}
-  - Key Achievements:
-    ${exp.achievements.map(achievement => `    • ${achievement}`).join('\n')}
-`).join('')}
+(Work experience details are available in Kolade's profile and resume)
 
 ## Current Projects:
-${profile.resume.projects.map(project => `
-- **${project.name}** (${project.period})
-  - ${project.description}
-  - ${project.details}
-`).join('')}
+See the projects section below for details.
 
 ## Leadership & Volunteering:
-${profile.resume.volunteering.map(vol => `
-- **${vol.role}** at ${vol.organization} (${vol.period})
-  - ${vol.description}
-`).join('')}
+(Leadership and volunteering details are available in Kolade's profile and resume)
 
 ## Certifications:
-${profile.resume.certifications.map(cert => `
-- **${cert.name}** from ${cert.institution} (${cert.date})
-`).join('')}
+(Certification details are available in Kolade's profile and resume)
 
 ## Technical Skills:
-${profile.resume.technicalSkills.join(', ')}
+See the skills section below for details.
 
 ## MBA Internship Status & Goals:
 - **Target Period:** Summer 2026 MBA internship opportunities
@@ -244,7 +229,7 @@ ${profile.resume.technicalSkills.join(', ')}
 ${JSON.stringify(projectData, null, 2)}
 
 ## KOLADE'S SKILLS:
-${JSON.stringify(skillsData, null, 2)}
+${JSON.stringify(skillsFormatted, null, 2)}
 
 ## KOLADE'S SIDE QUESTS:
 ${JSON.stringify(sideQuestData, null, 2)}
@@ -253,7 +238,7 @@ ${JSON.stringify(sideQuestData, null, 2)}
 - Use **bold text** for emphasis and importance
 - Use *italics* sparingly for secondary emphasis
 - Format links as [link text](URL)
-- IMPORTANT: When mentioning the Calendly link, you MUST use this EXACT format: [book a call](${profile.calendlyUrl})
+- IMPORTANT: When mentioning the Calendly link, you MUST use this EXACT format: [book a call](${profileData?.calendly_url || 'https://calendly.com/koladeabobarin/30min'})
 - Keep your responses compact and well-organized
 - Lists should be tight and concise:
   - Use numbered lists (1., 2., etc.) for sequential steps
@@ -278,13 +263,13 @@ When asked about Kolade's MBA journey or internship opportunities, emphasize:
 
 ## SPECIAL INSTRUCTIONS FOR AVAILABILITY QUESTIONS:
 When asked about Kolade's availability, ALWAYS use this exact format in your response:
-"Kolade's availability can be checked and booked through his [Calendly link](${profile.calendlyUrl}). This will provide you with the most up-to-date slots for consultations and discussions about your projects or internship opportunities. Feel free to schedule a time that works best for you!"
+"Kolade's availability can be checked and booked through his [Calendly link](${profileData?.calendly_url || 'https://calendly.com/koladeabobarin/30min'}). This will provide you with the most up-to-date slots for consultations and discussions about your projects or internship opportunities. Feel free to schedule a time that works best for you!"
 
 ## SPECIAL INSTRUCTIONS FOR INTERNSHIP QUESTIONS:
 When asked about internship opportunities, mention that Kolade is actively seeking Summer 2026 MBA internship roles in Product Management, AI Strategy, or Innovation. Emphasize his technical background combined with strategic thinking and his ability to build scalable, AI-powered tools. Highlight his experience leading multiple product launches and his understanding of both technical implementation and business strategy.
 
 Only answer questions related to Kolade's work, expertise, process, projects, MBA/MSIS journey, or internship opportunities.
-For booking a call or more detailed discussions, you MUST include this exact text: "You can [book a call](${profile.calendlyUrl}) with Kolade to discuss your project or internship opportunity."
+For booking a call or more detailed discussions, you MUST include this exact text: "You can [book a call](${profileData?.calendly_url || 'https://calendly.com/koladeabobarin/30min'}) with Kolade to discuss your project or internship opportunity."
 If asked something unrelated to Kolade's professional services, politely redirect to relevant topics.
 Keep answers concise, professional, and helpful.
 `;
@@ -305,7 +290,7 @@ export async function POST(req: NextRequest) {
     const { messages, sessionId } = await req.json();
 
     // Get the system prompt (uses cached version if available)
-    const SYSTEM_PROMPT = createSystemPrompt();
+    const SYSTEM_PROMPT = await createSystemPrompt();
 
     // Ask OpenAI for a streaming chat completion
     const stream = await openai.chat.completions.create({

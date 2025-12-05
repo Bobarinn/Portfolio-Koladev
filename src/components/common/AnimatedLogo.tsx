@@ -119,6 +119,7 @@ export const AnimatedLogo = ({
                 src="/profile.jpg"
                 alt="Profile"
                 fill
+                sizes="64px"
                 className="object-cover"
               />
             </motion.div>

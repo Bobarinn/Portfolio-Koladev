@@ -4,17 +4,72 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { profile } from '@/data/profile';
 import { AnimatedText } from '@/components/common/AnimatedText';
 import { GlowingButton } from '@/components/common/GlowingButton';
 import { GitHubLogoIcon, LinkedInLogoIcon, TwitterLogoIcon } from '@radix-ui/react-icons';
 import { CalendarIcon } from 'lucide-react';
+
+interface ProfileData {
+  name: string;
+  nickname: string;
+  title: string;
+  tagline: string;
+  description: string;
+  image?: string;
+  socials: Array<{ name: string; url: string; icon: string }>;
+}
 
 export const HeroSection = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+
+  // Fetch profile data
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch('/api/data/profile');
+        if (response.ok) {
+          const data = await response.json();
+          // Transform data to match expected structure
+          setProfile({
+            name: data.name || 'Kolade Abobarin',
+            nickname: data.nickname || 'Kay',
+            title: data.title || '',
+            tagline: data.tagline || '',
+            description: data.description || '',
+            image: data.image,
+            socials: [
+              { name: 'GitHub', url: data.github || 'https://github.com/Bobarinn', icon: 'github' },
+              { name: 'LinkedIn', url: data.linkedin || 'https://www.linkedin.com/in/koladeabobarin/', icon: 'linkedin' },
+              { name: 'Twitter', url: 'https://x.com/Kolade_Abobarin', icon: 'twitter' },
+              { name: 'Calendly', url: data.calendly_url || 'https://calendly.com/koladeabobarin/30min', icon: 'calendar' },
+            ],
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        // Fallback data
+        setProfile({
+          name: 'Kolade Abobarin',
+          nickname: 'Kay',
+          title: 'Builder | MBA/MSIS Candidate | Product-Driven Developer',
+          tagline: 'From Idea to Scalable Product — Code, No-Code & AI',
+          description: 'I build scalable digital solutions using no-code platforms, traditional coding, and AI.',
+          socials: [
+            { name: 'GitHub', url: 'https://github.com/Bobarinn', icon: 'github' },
+            { name: 'LinkedIn', url: 'https://www.linkedin.com/in/koladeabobarin/', icon: 'linkedin' },
+            { name: 'Twitter', url: 'https://x.com/Kolade_Abobarin', icon: 'twitter' },
+            { name: 'Calendly', url: 'https://calendly.com/koladeabobarin/30min', icon: 'calendar' },
+          ],
+        });
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   // Mount state to prevent hydration mismatch and check for mobile
   useEffect(() => {
@@ -208,7 +263,14 @@ export const HeroSection = () => {
                 <div className="w-16 h-16 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-full overflow-hidden border-4 border-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple p-1 bg-gradient-to-r from-glow-cyan/20 via-glow-blue/20 to-glow-purple/20 relative">
                   <div className="absolute inset-0 rounded-full bg-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple opacity-30 animate-pulse"></div>
                   <div className="w-full h-full rounded-full overflow-hidden relative">
-                    <Image src="/profile.jpg" alt="Kolade Abobarin" fill className="object-cover object-top" priority />
+                    <Image 
+                      src={profile?.image || '/profile.jpg'} 
+                      alt={profile?.name || 'Kolade Abobarin'} 
+                      fill 
+                      sizes="(max-width: 768px) 64px, (max-width: 1024px) 96px, 112px"
+                      className="object-cover object-top" 
+                      priority 
+                    />
                   </div>
                 </div>
 
@@ -235,38 +297,44 @@ export const HeroSection = () => {
               </motion.div>
 
               <h1 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
-                <AnimatedText
-                  text={`Hi, I'm ${profile.name}`}
-                  className="inline-flex justify-center text-center"
-                  speed={isMobile ? 0.07 : 0.05}
-                  once={true}
-                />
-                <br />
-                <span className="bg-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple bg-clip-text text-transparent animate-flow-right">
-                  <AnimatedText
-                    text={profile.title}
-                    className="inline-flex justify-center text-center"
-                    speed={isMobile ? 0.07 : 0.05}
-                    once={true}
-                  />
-                </span>
+                {profile && (
+                  <>
+                    <AnimatedText
+                      text={`Hi, I'm ${profile.name}`}
+                      className="inline-flex justify-center text-center"
+                      speed={isMobile ? 0.07 : 0.05}
+                      once={true}
+                    />
+                    <br />
+                    <span className="bg-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple bg-clip-text text-transparent animate-flow-right">
+                      <AnimatedText
+                        text={profile.title}
+                        className="inline-flex justify-center text-center"
+                        speed={isMobile ? 0.07 : 0.05}
+                        once={true}
+                      />
+                    </span>
+                  </>
+                )}
               </h1>
             </motion.div>
 
             <motion.div variants={itemVariants}>
               <div className="text-base md:text-lg lg:text-2xl mb-6 md:mb-8 lg:mb-10 text-muted-foreground max-w-2xl mx-auto">
-                <AnimatedText
-                  text={profile.tagline}
-                  className="inline-flex justify-center text-center"
-                  speed={isMobile ? 0.05 : 0.03}
-                  once={true}
-                />
+                {profile && (
+                  <AnimatedText
+                    text={profile.tagline}
+                    className="inline-flex justify-center text-center"
+                    speed={isMobile ? 0.05 : 0.03}
+                    once={true}
+                  />
+                )}
               </div>
             </motion.div>
 
             <motion.div variants={itemVariants}>
               <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto mb-3 md:mb-6 lg:mb-8">
-                {profile.description}
+                {profile?.description}
               </p>
             </motion.div>
 
@@ -348,7 +416,7 @@ export const HeroSection = () => {
               variants={itemVariants}
               className="flex items-center justify-center gap-3 md:gap-4"
             >
-              {profile.socials.map((social) => (
+              {profile?.socials.map((social) => (
                 <motion.a
                   key={social.name}
                   href={social.url}

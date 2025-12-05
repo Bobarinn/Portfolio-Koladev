@@ -15,8 +15,6 @@ import {
   Code2Icon,
   BookOpenIcon
 } from 'lucide-react';
-import { profile } from '@/data/profile';
-import { projects } from '@/data/projects';
 
 // TikTok Icon component
 const TikTokIcon = ({ color = "currentColor" }) => {
@@ -38,18 +36,76 @@ const TikTokIcon = ({ color = "currentColor" }) => {
   );
 };
 
+interface ProfileData {
+  socials: Array<{ name: string; url: string }>;
+  calendlyUrl: string;
+}
+
+interface Project {
+  id: string;
+  title: string;
+  image: string;
+  tags: string[];
+  demoUrl?: string;
+  repoUrl?: string;
+}
+
 export default function LinksPage() {
   const [mounted, setMounted] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
   const [typedText, setTypedText] = useState('');
   const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
   const [isPending, setIsPending] = useState(false);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
   const text = `Hi, I'm Kolade`;
   const typingSpeed = 100; // ms per character
   
   // Load after hydration
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // Fetch profile and projects
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [profileRes, projectsRes] = await Promise.all([
+          fetch('/api/data/profile'),
+          fetch('/api/data/projects'),
+        ]);
+
+        if (profileRes.ok) {
+          const profileData = await profileRes.json();
+          setProfile({
+            socials: [
+              { name: 'GitHub', url: profileData.github || 'https://github.com/Bobarinn' },
+              { name: 'LinkedIn', url: profileData.linkedin || 'https://www.linkedin.com/in/koladeabobarin/' },
+              { name: 'Twitter', url: 'https://x.com/Kolade_Abobarin' },
+            ],
+            calendlyUrl: profileData.calendly_url || 'https://calendly.com/koladeabobarin/30min',
+          });
+        }
+
+        if (projectsRes.ok) {
+          const projectsData = await projectsRes.json();
+          setProjects(projectsData);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        // Fallback data
+        setProfile({
+          socials: [
+            { name: 'GitHub', url: 'https://github.com/Bobarinn' },
+            { name: 'LinkedIn', url: 'https://www.linkedin.com/in/koladeabobarin/' },
+            { name: 'Twitter', url: 'https://x.com/Kolade_Abobarin' },
+          ],
+          calendlyUrl: 'https://calendly.com/koladeabobarin/30min',
+        });
+      }
+    };
+
+    fetchData();
   }, []);
   
   // Typing effect
@@ -72,14 +128,14 @@ export default function LinksPage() {
   const topProjects = projects.slice(0, 5);
 
   const nextProject = () => {
-    if (isPending) return;
+    if (isPending || topProjects.length === 0) return;
     setIsPending(true);
     setCurrentProjectIndex((prev) => (prev + 1) % topProjects.length);
     setTimeout(() => setIsPending(false), 500);
   };
 
   const prevProject = () => {
-    if (isPending) return;
+    if (isPending || topProjects.length === 0) return;
     setIsPending(true);
     setCurrentProjectIndex((prev) => (prev - 1 + topProjects.length) % topProjects.length);
     setTimeout(() => setIsPending(false), 500);
@@ -127,6 +183,7 @@ export default function LinksPage() {
                   src="/profile.jpg" 
                   alt="Kolade Abobarin" 
                   fill 
+                  sizes="40px"
                   className="object-cover"
                   priority 
                 />
@@ -149,6 +206,7 @@ export default function LinksPage() {
                     src="/profile.jpg" 
                     alt="Kolade Abobarin" 
                     fill 
+                    sizes="96px"
                     className="object-cover rounded-full" 
                     priority
                   />
@@ -186,45 +244,52 @@ export default function LinksPage() {
                       className="overflow-hidden"
                     >
                       <div className="mt-3 border border-border/30 rounded-md bg-card/20 p-4">
-                        {/* Project Carousel */}
-                        <div className="relative">
-                          <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.5 }}
-                            className="aspect-video relative rounded-md overflow-hidden"
-                          >
-                            <Link
-                              href={topProjects[currentProjectIndex].demoUrl || topProjects[currentProjectIndex].repoUrl || '#'}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="block w-full h-full group"
-                            >
-                              <Image
-                                src={topProjects[currentProjectIndex].image}
-                                alt={topProjects[currentProjectIndex].title}
-                                fill
-                                className="object-cover group-hover:scale-105 transition-transform duration-300"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent group-hover:from-black/90 transition-colors duration-300"></div>
-                              <div className="absolute bottom-0 left-0 right-0 p-3">
-                                <h3 className="text-white font-bold flex items-center">
-                                  {topProjects[currentProjectIndex].title}
-                                  <ExternalLinkIcon className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                </h3>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {topProjects[currentProjectIndex].tags.slice(0, 3).map((tag) => (
-                                    <span 
-                                      key={tag} 
-                                      className="text-xs bg-glow-blue/20 text-glow-blue px-2 py-0.5 rounded"
-                                    >
-                                      {tag}
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-                            </Link>
+                        {topProjects.length === 0 ? (
+                          <div className="text-center py-8 text-muted-foreground">
+                            No projects available
+                          </div>
+                        ) : (
+                          <>
+                            {/* Project Carousel */}
+                            <div className="relative">
+                              <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.5 }}
+                                className="aspect-video relative rounded-md overflow-hidden"
+                              >
+                                <Link
+                                  href={topProjects[currentProjectIndex]?.demoUrl || topProjects[currentProjectIndex]?.repoUrl || '#'}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block w-full h-full group"
+                                >
+                                  <Image
+                                    src={topProjects[currentProjectIndex]?.image || '/projects/default.png'}
+                                    alt={topProjects[currentProjectIndex]?.title || 'Project'}
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                  />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent group-hover:from-black/90 transition-colors duration-300"></div>
+                                  <div className="absolute bottom-0 left-0 right-0 p-3">
+                                    <h3 className="text-white font-bold flex items-center">
+                                      {topProjects[currentProjectIndex]?.title}
+                                      <ExternalLinkIcon className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    </h3>
+                                    <div className="flex flex-wrap gap-1 mt-1">
+                                      {(topProjects[currentProjectIndex]?.tags || []).slice(0, 3).map((tag) => (
+                                        <span 
+                                          key={tag} 
+                                          className="text-xs bg-glow-blue/20 text-glow-blue px-2 py-0.5 rounded"
+                                        >
+                                          {tag}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </Link>
 
                             {/* Side navigation buttons */}
                             <button 
@@ -264,6 +329,8 @@ export default function LinksPage() {
                             </div>
                           </motion.div>
                         </div>
+                          </>
+                        )}
                       </div>
                     </motion.div>
                   )}
@@ -283,7 +350,7 @@ export default function LinksPage() {
               </Link>
               
               <Link 
-                href={profile.socials.find(s => s.name === "GitHub")?.url || 'https://github.com/Bobarinn'} 
+                href={profile?.socials.find(s => s.name === "GitHub")?.url || 'https://github.com/Bobarinn'} 
                 className="flex items-center p-3 rounded-md border border-border/50 bg-card/50 hover:bg-card/70 transition-colors"
               >
                 <span className="text-glow-blue mr-2">
@@ -294,7 +361,7 @@ export default function LinksPage() {
               </Link>
               
               <Link 
-                href={profile.calendlyUrl} 
+                href={profile?.calendlyUrl || 'https://calendly.com/koladeabobarin/30min'} 
                 className="flex items-center p-3 rounded-md border border-border/50 bg-card/50 hover:bg-card/70 transition-colors"
               >
                 <span className="text-glow-purple mr-2">
@@ -332,7 +399,7 @@ export default function LinksPage() {
               </div>
               
               <Link 
-                href={profile.socials.find(s => s.name === "Twitter")?.url || 'https://x.com/Kolade_Abobarin'} 
+                href={profile?.socials.find(s => s.name === "Twitter")?.url || 'https://x.com/Kolade_Abobarin'} 
                 className="flex items-center p-3 rounded-md border border-border/50 bg-card/50 hover:bg-card/70 transition-colors"
               >
                 <span className="text-glow-blue mr-2">
@@ -347,7 +414,7 @@ export default function LinksPage() {
             <div className="w-full pt-8 border-t border-border/30">
               <div className="flex justify-center space-x-4 mb-2">
                 <a 
-                  href={profile.socials.find(s => s.name === "GitHub")?.url || '#'} 
+                  href={profile?.socials.find(s => s.name === "GitHub")?.url || '#'} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="p-2 rounded-full border border-border/50 bg-card/30 text-muted-foreground hover:text-glow-blue hover:border-glow-blue/50 transition-all"
@@ -356,7 +423,7 @@ export default function LinksPage() {
                   <GithubIcon className="h-5 w-5" />
                 </a>
                 <a 
-                  href={profile.socials.find(s => s.name === "Twitter")?.url || '#'} 
+                  href={profile?.socials.find(s => s.name === "Twitter")?.url || '#'} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="p-2 rounded-full border border-border/50 bg-card/30 text-muted-foreground hover:text-glow-blue hover:border-glow-blue/50 transition-all"
@@ -365,7 +432,7 @@ export default function LinksPage() {
                   <TwitterIcon className="h-5 w-5" />
                 </a>
                 <a 
-                  href={profile.socials.find(s => s.name === "LinkedIn")?.url || '#'} 
+                  href={profile?.socials.find(s => s.name === "LinkedIn")?.url || '#'} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="p-2 rounded-full border border-border/50 bg-card/30 text-muted-foreground hover:text-glow-blue hover:border-glow-blue/50 transition-all"
@@ -383,7 +450,7 @@ export default function LinksPage() {
                   <TikTokIcon />
                 </a>
                 <a 
-                  href={profile.calendlyUrl} 
+                  href={profile?.calendlyUrl || 'https://calendly.com/koladeabobarin/30min'} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="p-2 rounded-full border border-border/50 bg-card/30 text-muted-foreground hover:text-glow-blue hover:border-glow-blue/50 transition-all"
