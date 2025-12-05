@@ -1,15 +1,50 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { profile } from '@/data/profile';
 import Link from 'next/link';
 import { GithubIcon, LinkedinIcon, TwitterIcon } from 'lucide-react';
 
+interface ProfileData {
+  socials: Array<{ name: string; url: string }>;
+}
+
 export const Footer = () => {
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch('/api/data/profile');
+        if (response.ok) {
+          const data = await response.json();
+          setProfile({
+            socials: [
+              { name: 'GitHub', url: data.github || 'https://github.com/Bobarinn' },
+              { name: 'LinkedIn', url: data.linkedin || 'https://www.linkedin.com/in/koladeabobarin/' },
+              { name: 'Twitter', url: 'https://x.com/Kolade_Abobarin' },
+            ],
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        setProfile({
+          socials: [
+            { name: 'GitHub', url: 'https://github.com/Bobarinn' },
+            { name: 'LinkedIn', url: 'https://www.linkedin.com/in/koladeabobarin/' },
+            { name: 'Twitter', url: 'https://x.com/Kolade_Abobarin' },
+          ],
+        });
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
   // Find social media links from the socials array
-  const githubProfile = profile.socials.find(social => social.name === "GitHub")?.url || "#";
-  const linkedinProfile = profile.socials.find(social => social.name === "LinkedIn")?.url || "#";
-  const twitterProfile = profile.socials.find(social => social.name === "Twitter")?.url || "#";
+  const githubProfile = profile?.socials.find(social => social.name === "GitHub")?.url || "#";
+  const linkedinProfile = profile?.socials.find(social => social.name === "LinkedIn")?.url || "#";
+  const twitterProfile = profile?.socials.find(social => social.name === "Twitter")?.url || "#";
 
   return (
     <footer className="mt-20 border-t border-border/20 py-8 backdrop-blur-sm">

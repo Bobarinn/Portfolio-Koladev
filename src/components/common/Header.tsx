@@ -5,17 +5,42 @@ import { motion } from 'framer-motion';
 import { BookOpenIcon, MenuIcon, XIcon, LinkIcon } from 'lucide-react';
 import { GlowingButton } from './GlowingButton';
 import { AnimatedLogo } from './AnimatedLogo';
-import { profile } from '@/data/profile';
 import Link from 'next/link';
+
+interface ProfileData {
+  calendlyUrl: string;
+}
 
 export const Header = () => {
   const [showHeader, setShowHeader] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
   
   // Handle mounting to prevent hydration mismatch
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch('/api/data/profile');
+        if (response.ok) {
+          const data = await response.json();
+          setProfile({
+            calendlyUrl: data.calendly_url || 'https://calendly.com/koladeabobarin/30min',
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        setProfile({
+          calendlyUrl: 'https://calendly.com/koladeabobarin/30min',
+        });
+      }
+    };
+
+    fetchProfile();
   }, []);
   
   // Set up scroll listener after component is mounted
@@ -160,7 +185,7 @@ export const Header = () => {
               <LinkIcon className="h-4 w-4 mr-1" />
               Links
             </Link>
-            <GlowingButton href={profile.calendlyUrl}>
+            <GlowingButton href={profile?.calendlyUrl || 'https://calendly.com/koladeabobarin/30min'}>
               <span className="flex items-center">
                 <BookOpenIcon className="w-4 h-4 mr-2" />
                 Book a Call
@@ -221,7 +246,7 @@ export const Header = () => {
                 Links
               </Link>
               <div className="py-2 px-4">
-                <GlowingButton href={profile.calendlyUrl} className="w-full justify-center">
+                <GlowingButton href={profile?.calendlyUrl || 'https://calendly.com/koladeabobarin/30min'} className="w-full justify-center">
                   <span className="flex items-center">
                     <BookOpenIcon className="w-4 h-4 mr-2" />
                     Book a Call

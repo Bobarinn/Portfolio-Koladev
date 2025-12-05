@@ -1,14 +1,45 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { projects } from '@/data/projects';
 import { ProjectCard } from '@/components/common/ProjectCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AnimatedText } from '@/components/common/AnimatedText';
 
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  category: 'no-code' | 'code' | 'ai';
+  image: string;
+  images?: string[];
+  tags: string[];
+  demoUrl?: string;
+  repoUrl?: string;
+}
+
 export const ProjectsSection = () => {
   const [activeTab, setActiveTab] = useState('all');
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch('/api/data/projects');
+        if (response.ok) {
+          const data = await response.json();
+          setProjects(data);
+        }
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
   
   const filteredProjects = activeTab === 'all' 
     ? projects 
@@ -81,16 +112,22 @@ export const ProjectsSection = () => {
             value={activeTab}
             className="mt-0"
           >
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
-              {filteredProjects.map((project, index) => (
-                <ProjectCard key={project.id} project={project} index={index} />
-              ))}
-            </motion.div>
+            {loading ? (
+              <div className="text-center py-12 text-muted-foreground">Loading projects...</div>
+            ) : filteredProjects.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">No projects found.</div>
+            ) : (
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
+                {filteredProjects.map((project, index) => (
+                  <ProjectCard key={project.id} project={project} index={index} />
+                ))}
+              </motion.div>
+            )}
           </TabsContent>
         </Tabs>
       </div>

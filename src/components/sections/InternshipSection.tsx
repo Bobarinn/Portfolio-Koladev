@@ -2,13 +2,20 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { profile } from '@/data/profile';
 import { GlowingButton } from '@/components/common/GlowingButton';
 import { DownloadIcon, LinkedinIcon, CalendarIcon } from 'lucide-react';
 import Image from 'next/image';
 
+interface ProfileData {
+  resumeUrl: string;
+  linkedinUrl: string;
+  calendlyUrl: string;
+  aim: string;
+}
+
 export const InternshipSection = () => {
   const [mounted, setMounted] = useState(false);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -30,6 +37,34 @@ export const InternshipSection = () => {
         }
       };
     }
+  }, []);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch('/api/data/profile');
+        if (response.ok) {
+          const data = await response.json();
+          setProfile({
+            resumeUrl: data.resume_url || '/resume.pdf',
+            linkedinUrl: data.linkedin || 'https://www.linkedin.com/in/koladeabobarin/',
+            calendlyUrl: data.calendly_url || 'https://calendly.com/koladeabobarin/30min',
+            aim: data.aim || '',
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        // Fallback data
+        setProfile({
+          resumeUrl: '/resume.pdf',
+          linkedinUrl: 'https://www.linkedin.com/in/koladeabobarin/',
+          calendlyUrl: 'https://calendly.com/koladeabobarin/30min',
+          aim: 'Actively seeking Summer 2026 MBA internship opportunities.',
+        });
+      }
+    };
+
+    fetchProfile();
   }, []);
 
   const containerVariants = {
@@ -125,6 +160,7 @@ export const InternshipSection = () => {
                   src="/resume-preview.jpg" 
                   alt="Resume Preview" 
                   fill 
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
                   className="object-cover object-top"
                   priority
                 />
@@ -136,7 +172,7 @@ export const InternshipSection = () => {
               Download my comprehensive résumé to see my full background, skills, and experience in product development and AI integration.
             </p>
             <GlowingButton
-              onClick={() => window.open(profile.resumeUrl, '_blank')}
+              onClick={() => profile && window.open(profile.resumeUrl, '_blank')}
               glowColor="blue"
               size="default"
               className="w-full"
@@ -187,7 +223,7 @@ export const InternshipSection = () => {
               See more about my background, experiences, certifications, and professional network on LinkedIn.
             </p>
             <GlowingButton
-              onClick={() => window.open(profile.linkedinUrl, '_blank')}
+              onClick={() => profile && window.open(profile.linkedinUrl, '_blank')}
               glowColor="purple"
               size="default"
               className="w-full"
@@ -209,11 +245,11 @@ export const InternshipSection = () => {
           <div className="bg-gradient-to-r from-glow-blue/10 via-glow-purple/10 to-glow-cyan/10 border border-glow-blue/20 rounded-lg p-8 max-w-3xl mx-auto">
             <h3 className="text-2xl font-semibold mb-4">Ready to Build Something Amazing?</h3>
             <p className="text-muted-foreground mb-6">
-            {profile.aim}
+            {profile?.aim}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <GlowingButton
-                onClick={() => window.open(profile.calendlyUrl, '_blank')}
+                onClick={() => profile && window.open(profile.calendlyUrl, '_blank')}
                 glowColor="blue"
                 size="default"
               >
