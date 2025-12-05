@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -15,10 +15,28 @@ export function LoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
+  
+  // Only create client when component mounts (client-side only)
+  const supabase = useMemo(() => {
+    if (typeof window === 'undefined') {
+      return null;
+    }
+    try {
+      return createClient();
+    } catch (error) {
+      console.error('Failed to create Supabase client:', error);
+      return null;
+    }
+  }, []);
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
+    
+    if (!supabase) {
+      toast.error('Supabase is not configured. Please check your environment variables.');
+      return;
+    }
+    
     setLoading(true);
 
     try {
@@ -44,6 +62,26 @@ export function LoginPage() {
       setLoading(false);
     }
   };
+
+  if (!supabase) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold text-destructive">Configuration Error</CardTitle>
+            <CardDescription>
+              Supabase environment variables are not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your environment variables.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Check your Vercel project settings → Environment Variables
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">

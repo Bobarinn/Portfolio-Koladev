@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -17,15 +17,35 @@ import { LoginPage } from '@/components/admin/LoginPage';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('profile');
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
-  const supabase = createClient();
+  
+  // Only create client when component mounts (client-side only)
+  const supabase = useMemo(() => {
+    if (typeof window === 'undefined') {
+      return null;
+    }
+    try {
+      return createClient();
+    } catch (error) {
+      console.error('Failed to create Supabase client:', error);
+      return null;
+    }
+  }, []);
 
   const checkAuth = async () => {
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
+    
     try {
       const { data: { user }, error } = await supabase.auth.getUser();
       
@@ -46,6 +66,11 @@ export default function AdminDashboard() {
   };
 
   const handleLogout = async () => {
+    if (!supabase) {
+      toast.error('Supabase client not available');
+      return;
+    }
+    
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
@@ -65,6 +90,11 @@ export default function AdminDashboard() {
 
   // Check authentication status on mount
   useEffect(() => {
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
+    
     checkAuth();
     
     // Listen for auth changes
@@ -89,6 +119,22 @@ export default function AdminDashboard() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
           <p className="mt-4 text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!supabase) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <div className="text-center max-w-md">
+          <h1 className="text-2xl font-bold mb-4">Configuration Error</h1>
+          <p className="text-muted-foreground mb-4">
+            Supabase environment variables are not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your environment variables.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Check your Vercel project settings → Environment Variables
+          </p>
         </div>
       </div>
     );
