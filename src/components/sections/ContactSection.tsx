@@ -14,20 +14,20 @@ import { siteProfile } from '@/data/profile';
 import { sections, designSystem } from '@/data/sections';
 import { cn } from '@/lib/utils';
 
-// Validation schema for form
+// Field names must match EmailJS template variables (see EMAIL_SETUP.md): {{from_name}}, {{reply_to}}, {{message}}
 const formSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
-  email: z.string().email({ message: 'Please enter a valid email address' }),
-  brief: z.string().min(10, { message: 'Brief must be at least 10 characters' }),
+  from_name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
+  reply_to: z.string().email({ message: 'Please enter a valid email address' }),
+  message: z.string().min(10, { message: 'Message must be at least 10 characters' }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-// Use environment variables instead of hardcoded values
-const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '';
-const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || '';
-const EMAILJS_AUTORESPONSE_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_AUTORESPONSE_TEMPLATE_ID || '';
-const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || '';
+// Credentials: set in `.env.local` (see EMAIL_SETUP.md). Public key is safe for the client.
+const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID ?? '';
+const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID ?? '';
+const EMAILJS_AUTORESPONSE_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_AUTORESPONSE_TEMPLATE_ID ?? '';
+const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY ?? '';
 
 // Section Header Component for consistency
 const SectionHeader = ({ number, label }: { number: string; label: string }) => (
@@ -48,10 +48,16 @@ export const ContactSection = () => {
   });
 
   const onSubmit = async (data: FormValues) => {
-    try {
-      if (!formRef.current) return;
+    if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+      toast.error(
+        'Email is not configured. Add NEXT_PUBLIC_EMAILJS_SERVICE_ID, NEXT_PUBLIC_EMAILJS_TEMPLATE_ID, and NEXT_PUBLIC_EMAILJS_PUBLIC_KEY to .env.local (see EMAIL_SETUP.md).'
+      );
+      return;
+    }
+    if (!formRef.current) return;
 
-      // First send the notification to yourself
+    try {
+      // 1) Notify you — template uses {{from_name}}, {{reply_to}}, {{message}} from the form fields
       await emailjs.sendForm(
         EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID,
@@ -59,21 +65,26 @@ export const ContactSection = () => {
         EMAILJS_PUBLIC_KEY
       );
 
-      // Then send an auto-response to the sender with Calendly link
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_AUTORESPONSE_TEMPLATE_ID,
-        {
-          to_email: data.email,
-          to_name: data.name,
-          from_name: siteProfile.name,
-          message: data.brief,
-          calendly_link: siteProfile.calendlyUrl,
-        },
-        EMAILJS_PUBLIC_KEY
-      );
+      // 2) Optional auto-response — template uses e.g. {{from_name}}, {{calendly_link}} (see EMAIL_SETUP.md)
+      if (EMAILJS_AUTORESPONSE_TEMPLATE_ID) {
+        await emailjs.send(
+          EMAILJS_SERVICE_ID,
+          EMAILJS_AUTORESPONSE_TEMPLATE_ID,
+          {
+            to_email: data.reply_to,
+            to_name: data.from_name,
+            from_name: data.from_name,
+            calendly_link: siteProfile.calendlyUrl,
+          },
+          EMAILJS_PUBLIC_KEY
+        );
+      }
 
-      toast.success('Message sent! Check your email for confirmation and scheduling options.');
+      toast.success(
+        EMAILJS_AUTORESPONSE_TEMPLATE_ID
+          ? 'Message sent! Check your email for confirmation and scheduling options.'
+          : 'Message sent! I will get back to you soon.'
+      );
       reset();
     } catch (error) {
       console.error('Email send error:', error);
@@ -164,53 +175,55 @@ export const ContactSection = () => {
 
               {/* Form */}
               <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                {/* Name Field */}
+                {/* Name — EmailJS: {{from_name}} */}
                 <div>
                   <label className="font-mono text-xs text-muted-foreground mb-2 block">
-                    {contact.form.fields.name.label}
+                    {contact.form.fields.from_name.label}
                   </label>
                   <Input
-                    {...register('name')}
-                    name="name"
-                    placeholder={contact.form.fields.name.placeholder}
+                    {...register('from_name')}
+                    name="from_name"
+                    placeholder={contact.form.fields.from_name.placeholder}
                     className="bg-background/80 border-border/40 font-mono text-sm placeholder:text-muted-foreground/50 h-10"
                   />
-                  {errors.name && <p className="text-xs text-destructive mt-1 font-mono">{errors.name.message}</p>}
+                  {errors.from_name && (
+                    <p className="text-xs text-destructive mt-1 font-mono">{errors.from_name.message}</p>
+                  )}
                 </div>
 
-                {/* Email Field */}
+                {/* Email — EmailJS: {{reply_to}} */}
                 <div>
                   <label className="font-mono text-xs text-muted-foreground mb-2 block">
-                    {contact.form.fields.email.label}
+                    {contact.form.fields.reply_to.label}
                   </label>
                   <Input
-                    {...register('email')}
-                    name="email"
+                    {...register('reply_to')}
+                    name="reply_to"
                     type="email"
-                    placeholder={contact.form.fields.email.placeholder}
+                    placeholder={contact.form.fields.reply_to.placeholder}
                     className="bg-background/80 border-border/40 font-mono text-sm placeholder:text-muted-foreground/50 h-10"
                   />
-                  {errors.email && <p className="text-xs text-destructive mt-1 font-mono">{errors.email.message}</p>}
+                  {errors.reply_to && (
+                    <p className="text-xs text-destructive mt-1 font-mono">{errors.reply_to.message}</p>
+                  )}
                 </div>
 
-                {/* Brief Field */}
+                {/* Message — EmailJS: {{message}} */}
                 <div>
                   <label className="font-mono text-xs text-muted-foreground mb-2 block">
-                    {contact.form.fields.brief.label}
+                    {contact.form.fields.message.label}
                   </label>
                   <Textarea
-                    {...register('brief')}
-                    name="brief"
-                    placeholder={contact.form.fields.brief.placeholder}
+                    {...register('message')}
+                    name="message"
+                    placeholder={contact.form.fields.message.placeholder}
                     rows={4}
                     className="bg-background/80 border-border/40 font-mono text-sm placeholder:text-muted-foreground/50 resize-none"
                   />
-                  {errors.brief && <p className="text-xs text-destructive mt-1 font-mono">{errors.brief.message}</p>}
+                  {errors.message && (
+                    <p className="text-xs text-destructive mt-1 font-mono">{errors.message.message}</p>
+                  )}
                 </div>
-
-                {/* Hidden fields for EmailJS */}
-                <input type="hidden" name="current_date" value={new Date().toLocaleDateString()} />
-                <input type="hidden" name="calendly_link" value={siteProfile.calendlyUrl} />
 
                 {/* Submit Button */}
                 <Button

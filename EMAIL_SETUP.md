@@ -56,16 +56,24 @@ This guide will help you set up EmailJS to handle form submissions from your por
    ```
 4. Save the template and note the Template ID
 
-## Step 4: Update Your Code
+## Step 4: Configure credentials (environment variables)
 
-1. Open `src/components/sections/ContactSection.tsx`
-2. Replace the placeholder values with your actual EmailJS credentials:
-   ```typescript
-   const EMAILJS_SERVICE_ID = "your_service_id"; // Replace with your actual Service ID
-   const EMAILJS_TEMPLATE_ID = "your_template_id"; // Replace with your actual Template ID 
-   const EMAILJS_PUBLIC_KEY = "your_public_key"; // Replace with your Public Key
-   ```
-3. Your Public Key can be found in the EmailJS dashboard under Account > API Keys
+The contact form reads EmailJS settings from **public** env vars (safe for the browser). Create or edit `.env.local` in the project root:
+
+```bash
+NEXT_PUBLIC_EMAILJS_SERVICE_ID=your_service_id
+NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=your_template_id
+NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=your_public_key
+# Optional — omit if you skip the auto-response template
+NEXT_PUBLIC_EMAILJS_AUTORESPONSE_TEMPLATE_ID=your_autoresponse_template_id
+```
+
+1. **Service ID** — from Email Services in the EmailJS dashboard  
+2. **Template ID** — your main “notify me” template (see Step 3)  
+3. **Public Key** — Account → API Keys in the EmailJS dashboard  
+4. **Auto-response Template ID** — only if you created the second template; otherwise leave unset  
+
+The form field `name` attributes are **`from_name`**, **`reply_to`**, and **`message`** so `sendForm` matches your main template variables `{{from_name}}`, `{{reply_to}}`, and `{{message}}`.
 
 ## Step 5: Test the Form
 
@@ -79,24 +87,15 @@ This guide will help you set up EmailJS to handle form submissions from your por
 If you want to set up a separate auto-response template:
 
 1. Create a second template in EmailJS specifically for auto-responses
-2. Update your code to send both emails:
+2. The app sends the main notification with `sendForm`, then (if `NEXT_PUBLIC_EMAILJS_AUTORESPONSE_TEMPLATE_ID` is set) sends the auto-response with `send` and this payload so your template can use `{{from_name}}` and `{{calendly_link}}` (greeting uses the **visitor’s** name):
    ```typescript
-   // First send the notification to yourself
-   await emailjs.sendForm(
-     EMAILJS_SERVICE_ID,
-     EMAILJS_TEMPLATE_ID,
-     formRef.current,
-     EMAILJS_PUBLIC_KEY
-   );
-   
-   // Then send the auto-response
    await emailjs.send(
      EMAILJS_SERVICE_ID,
      EMAILJS_AUTORESPONSE_TEMPLATE_ID,
      {
-       to_email: data.email,
-       to_name: data.name,
-       from_name: profile.name,
+       to_email: data.reply_to,
+       to_name: data.from_name,
+       from_name: data.from_name,
        calendly_link: profile.calendlyUrl,
      },
      EMAILJS_PUBLIC_KEY
