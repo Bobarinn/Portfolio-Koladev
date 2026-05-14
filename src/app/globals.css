@@ -98,74 +98,81 @@
   --terminal-comment: #166534;
 }
 
-/* Override Tailwind's font-sans to use Space Grotesk more directly */
+/* Inter + JetBrains Mono (engineer / structured) */
 @layer base {
   :root {
     --font-fallback: system-ui, sans-serif;
-    /* Space Grotesk should be applied by the variable from Next.js font loader */
   }
-  
+
   body {
-    font-family: var(--font-sans, 'Space Grotesk'), var(--font-fallback);
+    font-family: var(--font-sans), var(--font-fallback);
+    letter-spacing: -0.01em;
   }
-  
-  pre, code {
-    font-family: var(--font-mono, 'Fira Code'), monospace;
+
+  pre,
+  code,
+  kbd,
+  samp {
+    font-family: var(--font-mono), ui-monospace, monospace;
   }
 }
 
-/* Space Grotesk customizations */
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  letter-spacing: -0.02em; /* More noticeable tight letter spacing */
-  font-feature-settings: "salt" on, "ss01" on; /* Enable stylistic alternates in Space Grotesk */
 }
 
-h1, h2, h3, h4, h5, h6 {
-  letter-spacing: -0.03em; /* Even tighter letter spacing for headings */
-  font-feature-settings: "salt" on, "ss01" on, "case" on;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  letter-spacing: -0.02em;
+  font-weight: 600;
 }
 
-/* Make the distinctive Space Grotesk characters more obvious */
-.text-3xl, .text-4xl, .text-5xl, .text-6xl {
-  letter-spacing: -0.04em;
-  font-stretch: 105%; /* Space Grotesk tends to be a bit wider than system fonts */
+.text-3xl,
+.text-4xl,
+.text-5xl,
+.text-6xl {
+  letter-spacing: -0.03em;
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  /* Cobalt + cool slate (aligned with structured engineer reference + headshot tones) */
+  --background: oklch(0.14 0.035 264);
+  --foreground: oklch(0.96 0.01 264);
+  --card: oklch(0.175 0.038 264);
+  --card-foreground: oklch(0.96 0.01 264);
+  --popover: oklch(0.175 0.038 264);
+  --popover-foreground: oklch(0.96 0.01 264);
+  --primary: oklch(0.62 0.17 252);
+  --primary-foreground: oklch(0.99 0.005 264);
+  --secondary: oklch(0.22 0.035 264);
+  --secondary-foreground: oklch(0.92 0.015 264);
+  --muted: oklch(0.22 0.03 264);
+  --muted-foreground: oklch(0.66 0.03 252);
+  --accent: oklch(0.24 0.04 252);
+  --accent-foreground: oklch(0.96 0.01 264);
+  --destructive: oklch(0.62 0.2 25);
+  --border: oklch(0.3 0.04 264);
+  --input: oklch(0.28 0.04 264);
+  --ring: oklch(0.58 0.15 252);
+  --chart-1: oklch(0.58 0.15 252);
+  --chart-2: oklch(0.65 0.12 200);
+  --chart-3: oklch(0.72 0.1 180);
+  --chart-4: oklch(0.55 0.12 290);
+  --chart-5: oklch(0.62 0.16 40);
+  --sidebar: oklch(0.16 0.035 264);
+  --sidebar-foreground: oklch(0.96 0.01 264);
+  --sidebar-primary: oklch(0.62 0.17 252);
+  --sidebar-primary-foreground: oklch(0.99 0.005 264);
+  --sidebar-accent: oklch(0.22 0.035 264);
+  --sidebar-accent-foreground: oklch(0.96 0.01 264);
+  --sidebar-border: oklch(0.28 0.04 264);
+  --sidebar-ring: oklch(0.58 0.15 252);
 }
 
 @layer base {
@@ -196,13 +203,6 @@ h1, h2, h3, h4, h5, h6 {
   background: hsl(var(--muted-foreground));
 }
 
-/* Selection color */
-::selection {
-  background: rgba(0, 102, 255, 0.3);
-  color: hsl(var(--foreground));
-}
-
-/* Grid Background Animation - Update to add more glow */
 .grid-background {
   position: absolute;
   width: 100%;
@@ -971,4 +971,44 @@ html, body, #__next, main {
 /* Custom cursor for terminal text */
 .cursor-terminal {
   cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='24' style='fill:none'><text font-family='monospace' font-size='20' x='0' y='20' fill='%234ade80'>_</text></svg>") 8 16, auto;
+}
+
+/* Engineer / mono / cobalt surface (portfolio) */
+.engineer-surface {
+  background-color: var(--background);
+  background-image:
+    linear-gradient(to right, oklch(0.62 0.17 252 / 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0.62 0.17 252 / 0.025) 1px, transparent 1px);
+  background-size: 72px 72px;
+  background-position: center top;
+}
+
+.section-eyebrow {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: oklch(0.62 0.17 252);
+}
+
+.project-spec-card {
+  border: 1px solid oklch(0.32 0.04 264 / 0.85);
+  background: linear-gradient(145deg, oklch(0.19 0.04 264 / 0.65), oklch(0.15 0.03 264 / 0.92));
+  box-shadow: 0 0 0 1px oklch(0.62 0.17 252 / 0.06);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.project-spec-card:hover {
+  border-color: oklch(0.62 0.17 252 / 0.45);
+  box-shadow:
+    0 0 0 1px oklch(0.62 0.17 252 / 0.12),
+    0 24px 48px -32px oklch(0.1 0.05 264 / 0.8);
+}
+
+::selection {
+  background: oklch(0.62 0.17 252 / 0.35);
+  color: var(--foreground);
 }

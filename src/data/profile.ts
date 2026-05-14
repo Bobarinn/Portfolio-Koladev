@@ -1,12 +1,12 @@
 export const profile = {
   name: "Kolade Abobarin",
   nickname: "Kay",
-  title: "Builder | MBA/MSIS Candidate | Product-Driven Developer",
-  tagline: "From Idea to Scalable Product — Code, No-Code & AI",
-  aim: "Actively seeking Summer 2026 MBA internship opportunities to build innovative products at the intersection of tech and business.",
-  description: "I build scalable digital solutions using no-code platforms, traditional coding, and AI. My focus is on rapid development and cost-effective scalability, with experience leading multiple product launches from concept to execution.",
-  workSchedule: "I work 24/7, but my best hours are between 9 AM and 11 PM GMT+1. I'm available for meetings at any time. I am Open to full time role, as well as project based contracts, but that depends on if i have other engagements or not",
-  email: "kolade_abobarin1@baylor.edu",
+  title: "Bubble.io Developer | AI Automation Builder | Product-Minded Software Developer",
+  tagline: "I build scalable no-code and AI-powered products for startups, founders, and businesses.",
+  aim: "Available for freelance Bubble.io builds, integrations, and AI-enabled workflows.",
+  description: "I specialize in Bubble.io applications, SaaS, marketplaces, CRMs, AI agents, and automation, turning early ideas into usable products with strong architecture, UX, and integrations.",
+  workSchedule: "Typically 9 AM–11 PM GMT+1 for meetings; project-based freelance engagements. Availability depends on current client load.",
+  email: "koladeabobarin@gmail.com",
   phone: "+1 (254) 447 4042",
   location: "Waco, Texas and All of United States",
   calendlyUrl: "https://calendly.com/koladeabobarin/30min",
@@ -96,7 +96,7 @@ export const profile = {
       {
         title: "Product Manager",
         company: "Aza Global Inc.",
-        location: "Lagos, Nigeria",
+        location: "Austin, TX",
         period: "Jan 2022 – Dec 2022",
         achievements: [
           "Spearheaded the launch of QPay, a fintech MVP, by defining product scope and go-to-market strategy, resulting in 100+ users and $3,000 in transactions within two weeks.",
@@ -158,4 +158,29 @@ export const profile = {
       "Tennis"
     ]
   }
-}; 
+};
+
+const githubUrl =
+  profile.socials.find((s) => s.icon === "github")?.url ?? "https://github.com/Bobarinn";
+
+/** Public site copy and links. Edit this file to update the portfolio (no database). */
+export const siteProfile = {
+  name: profile.name,
+  nickname: profile.nickname,
+  title: profile.title,
+  tagline: profile.tagline,
+  aim: profile.aim,
+  description: profile.description,
+  workSchedule: profile.workSchedule,
+  email: profile.email,
+  phone: profile.phone,
+  location: profile.location,
+  calendlyUrl: profile.calendlyUrl,
+  resumeUrl: profile.resumeUrl,
+  linkedinUrl: profile.linkedinUrl,
+  githubUrl,
+  image: "/headshot.png" as const,
+  /** Shown under the hero headshot (Polaroid-style frame). */
+  photoCaption: "Kolade | Austin, TX",
+  socials: profile.socials,
+};

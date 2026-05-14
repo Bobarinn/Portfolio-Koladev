@@ -15,6 +15,8 @@ import {
   Code2Icon,
   BookOpenIcon
 } from 'lucide-react';
+import { siteProfile } from '@/data/profile';
+import { featuredProjects } from '@/data/projects';
 
 // TikTok Icon component
 const TikTokIcon = ({ color = "currentColor" }) => {
@@ -36,19 +38,19 @@ const TikTokIcon = ({ color = "currentColor" }) => {
   );
 };
 
-interface ProfileData {
-  socials: Array<{ name: string; url: string }>;
-  calendlyUrl: string;
-}
+const linkPageProfile = {
+  socials: [
+    { name: 'GitHub', url: siteProfile.githubUrl },
+    { name: 'LinkedIn', url: siteProfile.linkedinUrl },
+    {
+      name: 'Twitter',
+      url: siteProfile.socials.find((s) => s.icon === 'twitter')?.url ?? 'https://x.com/Kolade_Abobarin',
+    },
+  ],
+  calendlyUrl: siteProfile.calendlyUrl,
+};
 
-interface Project {
-  id: string;
-  title: string;
-  image: string;
-  tags: string[];
-  demoUrl?: string;
-  repoUrl?: string;
-}
+const topProjects = featuredProjects.slice(0, 6);
 
 export default function LinksPage() {
   const [mounted, setMounted] = useState(false);
@@ -56,62 +58,16 @@ export default function LinksPage() {
   const [typedText, setTypedText] = useState('');
   const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
   const [isPending, setIsPending] = useState(false);
-  const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [projects, setProjects] = useState<Project[]>([]);
   const text = `Hi, I'm Kolade`;
-  const typingSpeed = 100; // ms per character
-  
-  // Load after hydration
+  const typingSpeed = 100;
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Fetch profile and projects
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [profileRes, projectsRes] = await Promise.all([
-          fetch('/api/data/profile'),
-          fetch('/api/data/projects'),
-        ]);
-
-        if (profileRes.ok) {
-          const profileData = await profileRes.json();
-          setProfile({
-            socials: [
-              { name: 'GitHub', url: profileData.github || 'https://github.com/Bobarinn' },
-              { name: 'LinkedIn', url: profileData.linkedin || 'https://www.linkedin.com/in/koladeabobarin/' },
-              { name: 'Twitter', url: 'https://x.com/Kolade_Abobarin' },
-            ],
-            calendlyUrl: profileData.calendly_url || 'https://calendly.com/koladeabobarin/30min',
-          });
-        }
-
-        if (projectsRes.ok) {
-          const projectsData = await projectsRes.json();
-          setProjects(projectsData);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        // Fallback data
-        setProfile({
-          socials: [
-            { name: 'GitHub', url: 'https://github.com/Bobarinn' },
-            { name: 'LinkedIn', url: 'https://www.linkedin.com/in/koladeabobarin/' },
-            { name: 'Twitter', url: 'https://x.com/Kolade_Abobarin' },
-          ],
-          calendlyUrl: 'https://calendly.com/koladeabobarin/30min',
-        });
-      }
-    };
-
-    fetchData();
-  }, []);
-  
-  // Typing effect
   useEffect(() => {
     if (!mounted) return;
-    
+
     let i = 0;
     const typing = setInterval(() => {
       setTypedText(text.substring(0, i));
@@ -120,12 +76,9 @@ export default function LinksPage() {
         clearInterval(typing);
       }
     }, typingSpeed);
-    
+
     return () => clearInterval(typing);
   }, [mounted, text]);
-  
-  // Get top 5 projects
-  const topProjects = projects.slice(0, 5);
 
   const nextProject = () => {
     if (isPending || topProjects.length === 0) return;
@@ -144,43 +97,21 @@ export default function LinksPage() {
   if (!mounted) return null;
   
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col items-center p-4 md:p-8 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 z-0 max-w-full overflow-hidden">
-        {/* Static grid background */}
-        <div className="grid-background max-w-full">
-          <div className="grid opacity-70"></div>
-        </div>
-
-        {/* Reduced number of glowing orbs */}
-        <div className="glowing-orbs max-w-full overflow-hidden">
-          {[...Array(2)].map((_, i) => (
-            <div
-              key={`orb-${i}`}
-              className={`orb orb-${i} opacity-60`}
-              style={{
-                animationDuration: `${30 + i * 10}s`,
-                filter: 'blur(30px)',
-              }}
-            />
-          ))}
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center p-4 md:p-8 relative overflow-hidden engineer-surface">
       <div className="w-full max-w-3xl z-10 relative">
         {/* Card Container */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="border border-border/50 bg-card/30 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden"
+          className="border border-border/60 bg-card/40 backdrop-blur-sm rounded-lg overflow-hidden project-spec-card"
         >
           {/* Header */}
           <div className="border-b border-border/30 p-4 bg-card/50 flex items-center justify-between">
             <div className="flex items-center">
-              <div className="relative w-10 h-10 rounded-full overflow-hidden mr-3 border border-glow-blue/30">
+              <div className="relative w-10 h-10 rounded-md overflow-hidden mr-3 ring-1 ring-border/70">
                 <Image 
-                  src="/profile.jpg" 
+                  src={siteProfile.image} 
                   alt="Kolade Abobarin" 
                   fill 
                   sizes="40px"
@@ -190,7 +121,7 @@ export default function LinksPage() {
               </div>
               <h1 className="text-lg font-semibold">Links | Kolade</h1>
             </div>
-            <Link href="/" className="text-muted-foreground hover:text-glow-blue">
+            <Link href="/" className="text-muted-foreground hover:text-primary">
               <ChevronLeftIcon className="h-5 w-5" />
             </Link>
           </div>
@@ -199,24 +130,21 @@ export default function LinksPage() {
           <div className="p-6 flex flex-col items-center space-y-8 max-h-[80vh] overflow-y-auto">
             {/* Profile Section */}
             <div className="text-center mb-6 space-y-4">
-              <div className="relative w-24 h-24 mx-auto mb-4">
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple opacity-30 animate-pulse"></div>
-                <div className="w-full h-full rounded-full overflow-hidden border-4 border-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple p-1 bg-gradient-to-r from-glow-cyan/20 via-glow-blue/20 to-glow-purple/20 relative">
+              <div className="relative w-24 h-24 mx-auto mb-4 rounded-md overflow-hidden ring-1 ring-border/70 bg-muted/20">
                   <Image 
-                    src="/profile.jpg" 
+                    src={siteProfile.image} 
                     alt="Kolade Abobarin" 
                     fill 
                     sizes="96px"
-                    className="object-cover rounded-full" 
+                    className="object-cover object-top" 
                     priority
                   />
-                </div>
               </div>
               
               <div>
                 <p className="text-xl md:text-2xl font-bold">
                   {typedText}
-                  <span className="inline-block h-4 w-2 bg-glow-blue ml-1 animate-blink"></span>
+                  <span className="inline-block h-4 w-2 bg-primary ml-1 animate-blink"></span>
                 </p>
                 <p className="text-muted-foreground mt-1">{/* Building stuff with AI & coffee. */}</p>
               </div>
@@ -230,7 +158,7 @@ export default function LinksPage() {
                   onClick={() => setShowProjects(!showProjects)} 
                   className="w-full text-left flex items-center p-3 rounded-md border border-border/50 bg-card/50 hover:bg-card/70 transition-colors"
                 >
-                  <ChevronRightIcon className={`h-5 w-5 mr-2 text-glow-blue transform transition-transform ${showProjects ? 'rotate-90' : ''}`} />
+                  <ChevronRightIcon className={`h-5 w-5 mr-2 text-primary transform transition-transform ${showProjects ? 'rotate-90' : ''}`} />
                   <span className="text-foreground">Projects</span>
                 </button>
                 
@@ -282,7 +210,7 @@ export default function LinksPage() {
                                       {(topProjects[currentProjectIndex]?.tags || []).slice(0, 3).map((tag) => (
                                         <span 
                                           key={tag} 
-                                          className="text-xs bg-glow-blue/20 text-glow-blue px-2 py-0.5 rounded"
+                                          className="text-xs bg-primary/15 text-primary px-2 py-0.5 rounded"
                                         >
                                           {tag}
                                         </span>
@@ -339,21 +267,21 @@ export default function LinksPage() {
               
               {/* Other Links */}
               <Link 
-                href="https://xophie.ai" 
+                href="https://xophieai.vercel.app" 
                 className="flex items-center p-3 rounded-md border border-border/50 bg-card/50 hover:bg-card/70 transition-colors"
               >
-                <span className="text-glow-purple mr-2">
+                <span className="text-primary mr-2">
                   <BookOpenIcon className="h-5 w-5" />
                 </span>
-                <span>Use Xophie to take meeting notes</span>
+                <span>Try Notely (meeting notes)</span>
                 <ExternalLinkIcon className="h-4 w-4 ml-auto text-muted-foreground" />
               </Link>
               
               <Link 
-                href={profile?.socials.find(s => s.name === "GitHub")?.url || 'https://github.com/Bobarinn'} 
+                href={linkPageProfile.socials.find((s) => s.name === 'GitHub')?.url || 'https://github.com/Bobarinn'} 
                 className="flex items-center p-3 rounded-md border border-border/50 bg-card/50 hover:bg-card/70 transition-colors"
               >
-                <span className="text-glow-blue mr-2">
+                <span className="text-primary mr-2">
                   <GithubIcon className="h-5 w-5" />
                 </span>
                 <span>GitHub</span>
@@ -361,10 +289,10 @@ export default function LinksPage() {
               </Link>
               
               <Link 
-                href={profile?.calendlyUrl || 'https://calendly.com/koladeabobarin/30min'} 
+                href={linkPageProfile.calendlyUrl} 
                 className="flex items-center p-3 rounded-md border border-border/50 bg-card/50 hover:bg-card/70 transition-colors"
               >
-                <span className="text-glow-purple mr-2">
+                <span className="text-primary mr-2">
                   <CalendarIcon className="h-5 w-5" />
                 </span>
                 <span>Book a Call</span>
@@ -378,7 +306,7 @@ export default function LinksPage() {
                   rel="noopener noreferrer"
                   className="flex items-center p-3 hover:bg-card/70 transition-colors"
                 >
-                  <span className="text-glow-cyan mr-2">
+                  <span className="text-primary mr-2">
                     <Code2Icon className="h-5 w-5" />
                   </span>
                   <span>Contribute to this project</span>
@@ -399,10 +327,10 @@ export default function LinksPage() {
               </div>
               
               <Link 
-                href={profile?.socials.find(s => s.name === "Twitter")?.url || 'https://x.com/Kolade_Abobarin'} 
+                href={linkPageProfile.socials.find((s) => s.name === 'Twitter')?.url || 'https://x.com/Kolade_Abobarin'} 
                 className="flex items-center p-3 rounded-md border border-border/50 bg-card/50 hover:bg-card/70 transition-colors"
               >
-                <span className="text-glow-blue mr-2">
+                <span className="text-primary mr-2">
                   <TwitterIcon className="h-5 w-5" />
                 </span>
                 <span>Twitter/X</span>
@@ -414,28 +342,28 @@ export default function LinksPage() {
             <div className="w-full pt-8 border-t border-border/30">
               <div className="flex justify-center space-x-4 mb-2">
                 <a 
-                  href={profile?.socials.find(s => s.name === "GitHub")?.url || '#'} 
+                  href={linkPageProfile.socials.find((s) => s.name === 'GitHub')?.url || '#'} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="p-2 rounded-full border border-border/50 bg-card/30 text-muted-foreground hover:text-glow-blue hover:border-glow-blue/50 transition-all"
+                  className="p-2 rounded-full border border-border/50 bg-card/30 text-muted-foreground hover:text-primary hover:border-primary/50 transition-all"
                   aria-label="GitHub"
                 >
                   <GithubIcon className="h-5 w-5" />
                 </a>
                 <a 
-                  href={profile?.socials.find(s => s.name === "Twitter")?.url || '#'} 
+                  href={linkPageProfile.socials.find((s) => s.name === 'Twitter')?.url || '#'} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="p-2 rounded-full border border-border/50 bg-card/30 text-muted-foreground hover:text-glow-blue hover:border-glow-blue/50 transition-all"
+                  className="p-2 rounded-full border border-border/50 bg-card/30 text-muted-foreground hover:text-primary hover:border-primary/50 transition-all"
                   aria-label="Twitter"
                 >
                   <TwitterIcon className="h-5 w-5" />
                 </a>
                 <a 
-                  href={profile?.socials.find(s => s.name === "LinkedIn")?.url || '#'} 
+                  href={linkPageProfile.socials.find((s) => s.name === 'LinkedIn')?.url || '#'} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="p-2 rounded-full border border-border/50 bg-card/30 text-muted-foreground hover:text-glow-blue hover:border-glow-blue/50 transition-all"
+                  className="p-2 rounded-full border border-border/50 bg-card/30 text-muted-foreground hover:text-primary hover:border-primary/50 transition-all"
                   aria-label="LinkedIn"
                 >
                   <LinkedinIcon className="h-5 w-5" />
@@ -444,16 +372,16 @@ export default function LinksPage() {
                   href="https://www.tiktok.com/@kolade.ai" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="p-2 rounded-full border border-border/50 bg-card/30 text-muted-foreground hover:text-glow-blue hover:border-glow-blue/50 transition-all"
+                  className="p-2 rounded-full border border-border/50 bg-card/30 text-muted-foreground hover:text-primary hover:border-primary/50 transition-all"
                   aria-label="TikTok"
                 >
                   <TikTokIcon />
                 </a>
                 <a 
-                  href={profile?.calendlyUrl || 'https://calendly.com/koladeabobarin/30min'} 
+                  href={linkPageProfile.calendlyUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="p-2 rounded-full border border-border/50 bg-card/30 text-muted-foreground hover:text-glow-blue hover:border-glow-blue/50 transition-all"
+                  className="p-2 rounded-full border border-border/50 bg-card/30 text-muted-foreground hover:text-primary hover:border-primary/50 transition-all"
                   aria-label="Calendly"
                 >
                   <CalendarIcon className="h-5 w-5" />

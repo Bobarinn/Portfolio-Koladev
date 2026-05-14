@@ -1,128 +1,25 @@
-// src/components/sections/HeroSection.tsx
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
+import { Lora } from 'next/font/google';
 import { motion } from 'framer-motion';
-import { AnimatedText } from '@/components/common/AnimatedText';
-import { GlowingButton } from '@/components/common/GlowingButton';
+import { Button } from '@/components/ui/button';
 import { GitHubLogoIcon, LinkedInLogoIcon, TwitterLogoIcon } from '@radix-ui/react-icons';
 import { CalendarIcon } from 'lucide-react';
+import { siteProfile } from '@/data/profile';
+import { cn } from '@/lib/utils';
 
-interface ProfileData {
-  name: string;
-  nickname: string;
-  title: string;
-  tagline: string;
-  description: string;
-  image?: string;
-  socials: Array<{ name: string; url: string; icon: string }>;
-}
+const polaroidCaptionFont = Lora({
+  subsets: ['latin'],
+  weight: ['400'],
+  style: ['italic'],
+  display: 'swap',
+});
 
 export const HeroSection = () => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [isMounted, setIsMounted] = useState(false);
-  const [showProfile, setShowProfile] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [profile, setProfile] = useState<ProfileData | null>(null);
-
-  // Fetch profile data
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await fetch('/api/data/profile');
-        if (response.ok) {
-          const data = await response.json();
-          // Transform data to match expected structure
-          setProfile({
-            name: data.name || 'Kolade Abobarin',
-            nickname: data.nickname || 'Kay',
-            title: data.title || '',
-            tagline: data.tagline || '',
-            description: data.description || '',
-            image: data.image,
-            socials: [
-              { name: 'GitHub', url: data.github || 'https://github.com/Bobarinn', icon: 'github' },
-              { name: 'LinkedIn', url: data.linkedin || 'https://www.linkedin.com/in/koladeabobarin/', icon: 'linkedin' },
-              { name: 'Twitter', url: 'https://x.com/Kolade_Abobarin', icon: 'twitter' },
-              { name: 'Calendly', url: data.calendly_url || 'https://calendly.com/koladeabobarin/30min', icon: 'calendar' },
-            ],
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-        // Fallback data
-        setProfile({
-          name: 'Kolade Abobarin',
-          nickname: 'Kay',
-          title: 'Builder | MBA/MSIS Candidate | Product-Driven Developer',
-          tagline: 'From Idea to Scalable Product — Code, No-Code & AI',
-          description: 'I build scalable digital solutions using no-code platforms, traditional coding, and AI.',
-          socials: [
-            { name: 'GitHub', url: 'https://github.com/Bobarinn', icon: 'github' },
-            { name: 'LinkedIn', url: 'https://www.linkedin.com/in/koladeabobarin/', icon: 'linkedin' },
-            { name: 'Twitter', url: 'https://x.com/Kolade_Abobarin', icon: 'twitter' },
-            { name: 'Calendly', url: 'https://calendly.com/koladeabobarin/30min', icon: 'calendar' },
-          ],
-        });
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
-  // Mount state to prevent hydration mismatch and check for mobile
-  useEffect(() => {
-    setIsMounted(true);
-    
-    // Check if mobile device based on screen width
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    // Initial check
-    checkMobile();
-    
-    // Add listener for resize
-    window.addEventListener('resize', checkMobile);
-
-    return () => {
-      window.removeEventListener('resize', checkMobile);
-    };
-  }, []);
-
-  // Set up the delay for showing profile image after determining if mobile
-  useEffect(() => {
-    if (!isMounted) return;
-    
-    // Show profile picture after a delay (shorter on mobile)
-    const timer = setTimeout(() => {
-      setShowProfile(true);
-    }, isMobile ? 800 : 1500);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [isMobile, isMounted]);
-
-  const handleScrollToProjects = () => {
-    const projectsSection = document.getElementById('projects');
-    if (projectsSection) {
-      projectsSection.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
-  };
-
-  const handleScrollToContact = () => {
-    const contactSection = document.getElementById('contact');
-    if (contactSection) {
-      contactSection.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   const iconMap: Record<string, React.ReactNode> = {
@@ -132,305 +29,104 @@ export const HeroSection = () => {
     calendar: <CalendarIcon className="h-5 w-5" />,
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: isMobile ? 0.1 : 0.2, // Faster stagger on mobile
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: isMobile ? 0.5 : 0.8, // Shorter animation on mobile
-        ease: [0.22, 1, 0.36, 1],
-      },
-    },
-  };
-
-  // Pre-calculate dot positions and sizes with reduced count for better performance
-  // Use fewer dots on mobile
-  const dotCount = isMobile ? 5 : 12;
-  const dotProps = [...Array(dotCount)].map((_, i) => {
-    // Use deterministic seeds for positioning to prevent hydration errors
-    const idx = i + 1;
-    return {
-      key: `dot-${i}`,
-      className: `dot dot-${i % 3}`,
-      style: {
-        // Use consistent syntax for style properties and constrain positioning to prevent overflow
-        left: `${Math.min((idx * 7) % 100, 90)}%`,
-        top: `${Math.min((idx * 9) % 100, 90)}%`,
-        width: `${(idx % 5) + 2}px`,
-        height: `${(idx % 4) + 2}px`,
-        opacity: 0.4,
-      },
-      initial: { opacity: 0 },
-      animate: { opacity: 0.4 },
-      transition: {
-        duration: 0.5,
-      },
-    };
-  });
-
   return (
-    <section
-      className="relative min-h-screen w-full flex flex-col justify-center items-center px-4 overflow-x-hidden pt-24 md:pt-32 lg:pt-12"
-      ref={scrollRef}
-    >
-      {/* Enhanced Background Elements - Simplified with reduced animations */}
-      <div className="absolute inset-0 z-0 max-w-full overflow-hidden">
-        {/* Static grid background */}
-        <div className="grid-background max-w-full">
-          <div className="grid opacity-70"></div>
-        </div>
-
-        {/* Reduced number of glowing orbs with slower animations */}
-        <div className="glowing-orbs max-w-full overflow-hidden">
-          {/* Even fewer orbs on mobile */}
-          {[...Array(isMobile ? 1 : 3)].map((_, i) => (
-            <div
-              key={`orb-${i}`}
-              className={`orb orb-${i} opacity-60`}
-              style={{
-                animationDuration: `${30 + i * 10}s`,
-                filter: 'blur(30px)',
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Tech dots - Only render on client side to prevent hydration errors */}
-        {isMounted && (
-          <div className="tech-dots max-w-full overflow-hidden">
-            {dotProps.map((props) => (
-              <motion.div
-                key={props.key}
-                className={props.className}
-                style={props.style}
-                initial={props.initial}
-                animate={props.animate}
-                transition={props.transition}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Simplified circuit lines - fewer and more static */}
-        <div className="circuit-lines opacity-60 max-w-full overflow-hidden">
-          {/* Fewer lines on mobile */}
-          {[...Array(isMobile ? 3 : 5)].map((_, i) => (
-            <div
-              key={`line-${i}`}
-              className={`line line-${i}`}
-              style={{
-                animationDuration: '0s', // No animation
-                opacity: 0.5,
-              }}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Hero Content */}
-      <div className="max-w-5xl mx-auto text-center z-10 relative w-full flex flex-col h-full">
+    <section className="relative border-b border-border/80">
+      <div className="max-w-6xl mx-auto px-4 pt-28 pb-16 md:pt-32 md:pb-20">
         <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="flex flex-col h-full"
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-16 items-start"
         >
-          <div className="space-y-3 md:space-y-5 lg:space-y-8">
-            <motion.div variants={itemVariants} className="flex flex-col items-center">
-              {/* Profile Image - smaller on mobile */}
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={showProfile ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
-                transition={{
-                  type: 'spring',
-                  stiffness: isMobile ? 200 : 260,
-                  damping: isMobile ? 15 : 20,
-                  delay: 0.2,
-                }}
-                className="mb-6 md:mb-8 lg:mb-10 relative"
+          <div>
+            <p className="section-eyebrow mb-4">Bubble.io · AI · Product</p>
+            <p className="font-mono text-sm text-muted-foreground mb-3">{siteProfile.name}</p>
+            <h1 className="text-3xl md:text-4xl lg:text-[2.5rem] font-semibold tracking-tight text-foreground leading-[1.15] mb-5">
+              {siteProfile.title}
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-xl leading-relaxed mb-4">{siteProfile.tagline}</p>
+            <p className="text-sm text-muted-foreground max-w-xl leading-relaxed mb-10 border-l-2 border-primary/50 pl-4">
+              {siteProfile.description}
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 mb-10">
+              <Button size="lg" className="sm:min-w-[168px] font-mono text-xs uppercase tracking-wider" onClick={() => scrollTo('projects')}>
+                View projects
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="sm:min-w-[168px] font-mono text-xs uppercase tracking-wider border-primary/35 hover:border-primary/60 hover:bg-primary/5"
+                onClick={() => scrollTo('contact')}
               >
-                <div className="w-16 h-16 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-full overflow-hidden border-4 border-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple p-1 bg-gradient-to-r from-glow-cyan/20 via-glow-blue/20 to-glow-purple/20 relative">
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple opacity-30 animate-pulse"></div>
-                  <div className="w-full h-full rounded-full overflow-hidden relative">
-                    <Image 
-                      src={profile?.image || '/profile.jpg'} 
-                      alt={profile?.name || 'Kolade Abobarin'} 
-                      fill 
-                      sizes="(max-width: 768px) 64px, (max-width: 1024px) 96px, 112px"
-                      className="object-cover object-top" 
-                      priority 
-                    />
-                  </div>
-                </div>
-
-                {/* Floating Elements Around Image - slowed down and conditionally rendered */}
-                {!isMobile && (
-                  <>
-                    <motion.div
-                      className="absolute -top-2 -right-2 w-5 h-5 md:w-6 md:h-6 bg-card/30 backdrop-blur-sm rounded-full flex items-center justify-center text-glow-blue"
-                      animate={{ y: [0, -3, 0] }}
-                      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                    >
-                      <span className="text-xs">✨</span>
-                    </motion.div>
-
-                    <motion.div
-                      className="absolute -bottom-1 -left-1 w-4 h-4 md:w-5 md:h-5 bg-card/30 backdrop-blur-sm rounded-full flex items-center justify-center text-glow-purple"
-                      animate={{ y: [0, 3, 0] }}
-                      transition={{ duration: 3, delay: 0.5, repeat: Infinity, ease: 'easeInOut' }}
-                    >
-                      <span className="text-xs">⚡</span>
-                    </motion.div>
-                  </>
-                )}
-              </motion.div>
-
-              <h1 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
-                {profile && (
-                  <>
-                    <AnimatedText
-                      text={`Hi, I'm ${profile.name}`}
-                      className="inline-flex justify-center text-center"
-                      speed={isMobile ? 0.07 : 0.05}
-                      once={true}
-                    />
-                    <br />
-                    <span className="bg-gradient-to-r from-glow-cyan via-glow-blue to-glow-purple bg-clip-text text-transparent animate-flow-right">
-                      <AnimatedText
-                        text={profile.title}
-                        className="inline-flex justify-center text-center"
-                        speed={isMobile ? 0.07 : 0.05}
-                        once={true}
-                      />
-                    </span>
-                  </>
-                )}
-              </h1>
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <div className="text-base md:text-lg lg:text-2xl mb-6 md:mb-8 lg:mb-10 text-muted-foreground max-w-2xl mx-auto">
-                {profile && (
-                  <AnimatedText
-                    text={profile.tagline}
-                    className="inline-flex justify-center text-center"
-                    speed={isMobile ? 0.05 : 0.03}
-                    once={true}
-                  />
-                )}
-              </div>
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto mb-3 md:mb-6 lg:mb-8">
-                {profile?.description}
-              </p>
-            </motion.div>
-
-            {/* Internship Availability Message */}
-            <div className="mb-6 md:mb-8 max-w-2xl mx-auto">
-              <motion.div 
-                className="rounded-3xl p-4 md:p-6 relative overflow-hidden"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.05) 100%)',
-                  backdropFilter: 'blur(25px) saturate(180%)',
-                  WebkitBackdropFilter: 'blur(25px) saturate(180%)',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), 0 2px 16px rgba(255, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.1)'
-                }}
-                whileHover={{ 
-                  scale: 1.03,
-                  y: -5,
-                  boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(255, 255, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.5)"
-                }}
-                animate={isMounted ? {
-                  y: [0, -2, 0],
-                  scale: [1, 1.01, 1],
-                } : {}}
-                transition={{
-                  duration: 8,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                {/* Liquid shine effect */}
-                {isMounted && (
-                  <div 
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      background: 'linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%)',
-                      transform: 'rotate(-45deg)',
-                      animation: 'liquidShine 6s ease-in-out infinite'
-                    }}
-                  />
-                )}
-                
-                <div className="relative z-10">
-                  <p className="text-sm md:text-base font-semibold text-glow-blue mb-2 drop-shadow-sm">
-                    📣 Open to Summer 2026 MBA Internships
-                  </p>
-                  <p className="text-xs md:text-sm text-muted-foreground/90 leading-relaxed">
-                    Let&apos;s build something impactful together! Seeking roles in Product Management, Program Manager, AI Strategy, or Innovation.
-                  </p>
-                </div>
-              </motion.div>
+                Work with me
+              </Button>
             </div>
-          </div>
 
-          <div className="mt-8 md:mt-12 lg:mt-16">
-            <motion.div variants={itemVariants}>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 mb-5 md:mb-8">
-                <GlowingButton
-                  onClick={handleScrollToProjects}
-                  glowColor="blue"
-                  size="default"
-                  className="w-full flex-1 sm:w-auto"
-                >
-                  View Projects
-                </GlowingButton>
-
-                <GlowingButton
-                  onClick={handleScrollToContact}
-                  variant="outline"
-                  glowColor="purple"
-                  size="default"
-                  className="w-full flex-1 sm:w-auto"
-                >
-                  Contact Me
-                </GlowingButton>
-              </div>
-            </motion.div>
-
-            <motion.div
-              variants={itemVariants}
-              className="flex items-center justify-center gap-3 md:gap-4"
-            >
-              {profile?.socials.map((social) => (
-                <motion.a
+            <div className="flex items-center gap-3">
+              {siteProfile.socials.map((social) => (
+                <a
                   key={social.name}
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-1.5 rounded-full border border-border/50 bg-card/30 text-muted-foreground hover:text-foreground hover:border-glow-blue/50 hover:shadow-sm hover:shadow-glow-blue/10 transition-all duration-300"
-                  whileHover={{ scale: 1.1 }}
+                  className="p-2.5 rounded-md border border-border/70 bg-card/40 text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
                 >
                   {iconMap[social.icon] || social.name}
                   <span className="sr-only">{social.name}</span>
-                </motion.a>
+                </a>
               ))}
-            </motion.div>
+            </div>
           </div>
+
+          <aside className="flex flex-col items-center lg:items-stretch gap-4">
+            <div className="flex w-full justify-center lg:justify-end pt-2 pb-1">
+              <div
+                className={cn(
+                  'w-full max-w-[min(100%,280px)] origin-center',
+                  '-rotate-[3.5deg] transition-transform duration-300 hover:-rotate-[2deg]',
+                )}
+                style={{
+                  filter: 'drop-shadow(10px 14px 22px rgba(0, 0, 0, 0.38)) drop-shadow(2px 4px 8px rgba(0, 0, 0, 0.2))',
+                }}
+              >
+                <div className="bg-white pt-[0.7rem] px-[0.7rem] pb-5 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.04)]">
+                  <div className="relative aspect-square w-full overflow-hidden bg-[#c8d4e8]">
+                    <Image
+                      src={siteProfile.image}
+                      alt={siteProfile.name}
+                      fill
+                      sizes="(max-width: 1024px) 280px, 280px"
+                      className="object-cover object-top"
+                      priority
+                    />
+                  </div>
+                  <p
+                    className={cn(
+                      polaroidCaptionFont.className,
+                      'pt-4 pb-0.5 text-center text-[13px] leading-snug tracking-[0.02em] text-neutral-600',
+                    )}
+                  >
+                    {siteProfile.photoCaption}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <dl className="w-full max-w-[280px] font-mono text-[11px] text-muted-foreground space-y-2 border border-border/60 rounded-md p-4 bg-card/30">
+              <div className="flex justify-between gap-4">
+                <dt className="text-primary/90">Role</dt>
+                <dd className="text-right text-foreground/90">Freelance builder</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-primary/90">Focus</dt>
+                <dd className="text-right text-foreground/90">Bubble · APIs · AI</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-primary/90">Location</dt>
+                <dd className="text-right text-foreground/90">{siteProfile.location.split(',')[0]}</dd>
+              </div>
+            </dl>
+          </aside>
         </motion.div>
       </div>
     </section>

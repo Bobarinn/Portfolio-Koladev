@@ -1,262 +1,99 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpenIcon, MenuIcon, XIcon, LinkIcon } from 'lucide-react';
-import { GlowingButton } from './GlowingButton';
-import { AnimatedLogo } from './AnimatedLogo';
-import Link from 'next/link';
+import { MenuIcon, XIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { siteProfile } from '@/data/profile';
 
-interface ProfileData {
-  calendlyUrl: string;
-}
+const scrollToId = (id: string, onDone?: () => void) => {
+  setTimeout(() => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    onDone?.();
+  }, 50);
+};
 
 export const Header = () => {
-  const [showHeader, setShowHeader] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const [profile, setProfile] = useState<ProfileData | null>(null);
-  
-  // Handle mounting to prevent hydration mismatch
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await fetch('/api/data/profile');
-        if (response.ok) {
-          const data = await response.json();
-          setProfile({
-            calendlyUrl: data.calendly_url || 'https://calendly.com/koladeabobarin/30min',
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-        setProfile({
-          calendlyUrl: 'https://calendly.com/koladeabobarin/30min',
-        });
-      }
-    };
-
-    fetchProfile();
-  }, []);
-  
-  // Set up scroll listener after component is mounted
-  useEffect(() => {
-    if (!mounted) return;
-    
-    const handleScroll = () => {
-      // Show header when scrolled down by any amount
-      if (window.scrollY > 50) {
-        setShowHeader(true);
-      } else {
-        setShowHeader(false);
-      }
-    };
-    
-    // Check initial position
-    handleScroll();
-    
-    // Add event listener
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [mounted]);
-  
-  const scrollToTop = () => {
-    // Close mobile menu first
-    setMobileMenuOpen(false);
-    
-    // Small delay to ensure menu is closed before scrolling
-    setTimeout(() => {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-    }, 50);
-  };
-  
-  const scrollToProjects = () => {
-    // Close mobile menu first
-    setMobileMenuOpen(false);
-    
-    // Small delay to ensure menu is closed before scrolling
-    setTimeout(() => {
-      const section = document.getElementById('projects');
-      if (section) {
-        // Use scrollIntoView for more reliable scrolling on mobile
-        section.scrollIntoView({ 
-          behavior: 'smooth',
-          block: 'start'
-        });
-      }
-    }, 50);
-  };
-  
-  const scrollToSideQuests = () => {
-    // Close mobile menu first
-    setMobileMenuOpen(false);
-    
-    // Small delay to ensure menu is closed before scrolling
-    setTimeout(() => {
-      const section = document.getElementById('side-quests');
-      if (section) {
-        // Use scrollIntoView for more reliable scrolling on mobile
-        section.scrollIntoView({ 
-          behavior: 'smooth',
-          block: 'start'
-        });
-      }
-    }, 50);
-  };
-  
-  const scrollToContact = () => {
-    // Close mobile menu first
-    setMobileMenuOpen(false);
-    
-    // Small delay to ensure menu is closed before scrolling
-    setTimeout(() => {
-      const section = document.getElementById('contact');
-      if (section) {
-        // Use scrollIntoView for more reliable scrolling on mobile
-        section.scrollIntoView({ 
-          behavior: 'smooth',
-          block: 'start'
-        });
-      }
-    }, 50);
-  };
-  
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
-  };
-
-  // Don't render anything on server or during hydration to prevent mismatch
-  if (!mounted) {
-    return null;
-  }
+  const closeMobile = () => setMobileMenuOpen(false);
 
   return (
-    <header 
-      className={`fixed top-0 left-0 right-0 w-full z-50 ${
-        showHeader ? 'translate-y-0 opacity-100' : 'translate-y-[-100%] opacity-0'
-      } transition-all duration-300`}
-    >
-      <div className="relative">
-        {/* Glow effect behind the header */}
-        <div className="absolute top-0 left-0 right-0 h-14 bg-gradient-to-b from-background/80 to-transparent backdrop-blur-sm z-0" />
-        
-        {/* Header content */}
-        <div className="relative z-10 container mx-auto px-4 py-2 flex justify-between items-center">
-          {/* Logo & Brand */}
-          <div onClick={scrollToTop} className="cursor-pointer">
-            <AnimatedLogo hideDomainName={true} className="md:hidden" />
-            <AnimatedLogo className="hidden md:flex" />
-          </div>
-          
-          {/* Desktop Navigation - hidden on mobile */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <button 
-              onClick={scrollToProjects}
-              className="text-light-text hover:text-glow-blue transition-colors font-medium"
-            >
-              Projects
-            </button>
-            <button 
-              onClick={scrollToSideQuests}
-              className="text-light-text hover:text-glow-blue transition-colors font-medium"
-            >
-              Side Quests
-            </button>
-            <button 
-              onClick={scrollToContact}
-              className="text-light-text hover:text-glow-blue transition-colors font-medium"
-            >
-              Contact
-            </button>
-            <Link 
-              href="/links" 
-              className="text-light-text hover:text-glow-blue transition-colors font-medium flex items-center"
-            >
-              <LinkIcon className="h-4 w-4 mr-1" />
-              Links
-            </Link>
-            <GlowingButton href={profile?.calendlyUrl || 'https://calendly.com/koladeabobarin/30min'}>
-              <span className="flex items-center">
-                <BookOpenIcon className="w-4 h-4 mr-2" />
-                Book a Call
-              </span>
-            </GlowingButton>
-          </nav>
-          
-          {/* Mobile Navigation */}
-          <div className="flex md:hidden">
-            <button
-              onClick={toggleMobileMenu}
-              className="p-1 text-white hover:text-glow-blue focus:outline-none transition-colors"
-            >
-              {mobileMenuOpen ? (
-                <XIcon className="h-5 w-5" />
-              ) : (
-                <MenuIcon className="h-5 w-5" />
-              )}
-            </button>
-          </div>
-        </div>
-        
-        {/* Mobile Menu */}
-        <motion.div
-          initial={{ height: 0, opacity: 0 }}
-          animate={{
-            height: mobileMenuOpen ? 'auto' : 0,
-            opacity: mobileMenuOpen ? 1 : 0
+    <header className="fixed top-0 left-0 right-0 w-full z-50 border-b border-border/60 bg-background/92 backdrop-blur-md">
+      <div className="container mx-auto px-4 py-3 flex justify-between items-center gap-4">
+        <button
+          type="button"
+          onClick={() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            closeMobile();
           }}
-          transition={{ duration: 0.3 }}
-          className="relative z-10 md:hidden bg-background/90 backdrop-blur-lg overflow-hidden"
+          className="text-left font-mono text-xs font-semibold uppercase tracking-[0.18em] text-foreground hover:text-primary transition-colors"
         >
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex flex-col space-y-4">
-              <button 
-                onClick={scrollToProjects}
-                className="py-3 px-4 text-light-text hover:text-glow-blue transition-colors font-medium border-b border-muted-foreground/10"
-              >
-                Projects
-              </button>
-              <button 
-                onClick={scrollToSideQuests}
-                className="py-3 px-4 text-light-text hover:text-glow-blue transition-colors font-medium border-b border-muted-foreground/10"
-              >
-                Side Quests
-              </button>
-              <button 
-                onClick={scrollToContact}
-                className="py-3 px-4 text-light-text hover:text-glow-blue transition-colors font-medium border-b border-muted-foreground/10"
-              >
-                Contact
-              </button>
-              <Link 
-                href="/links"
-                className="py-3 px-4 text-light-text hover:text-glow-blue transition-colors font-medium border-b border-muted-foreground/10 flex items-center"
-              >
-                <LinkIcon className="h-4 w-4 mr-2" />
-                Links
-              </Link>
-              <div className="py-2 px-4">
-                <GlowingButton href={profile?.calendlyUrl || 'https://calendly.com/koladeabobarin/30min'} className="w-full justify-center">
-                  <span className="flex items-center">
-                    <BookOpenIcon className="w-4 h-4 mr-2" />
-                    Book a Call
-                  </span>
-                </GlowingButton>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+          K.A.
+        </button>
+
+        <nav className="hidden md:flex items-center gap-8 text-xs font-mono uppercase tracking-widest">
+          <button type="button" className="text-muted-foreground hover:text-primary transition-colors" onClick={() => scrollToId('about')}>
+            About
+          </button>
+          <button type="button" className="text-muted-foreground hover:text-primary transition-colors" onClick={() => scrollToId('services')}>
+            Services
+          </button>
+          <button type="button" className="text-muted-foreground hover:text-primary transition-colors" onClick={() => scrollToId('projects')}>
+            Projects
+          </button>
+          <button type="button" className="text-muted-foreground hover:text-primary transition-colors" onClick={() => scrollToId('contact')}>
+            Contact
+          </button>
+          <Button size="sm" className="font-mono text-[10px] uppercase tracking-wider h-8" asChild>
+            <a href={siteProfile.calendlyUrl} target="_blank" rel="noopener noreferrer">
+              Book a call
+            </a>
+          </Button>
+        </nav>
+
+        <div className="flex md:hidden items-center gap-2">
+          <Button size="sm" variant="outline" asChild className="shrink-0 font-mono text-[10px] uppercase tracking-wider h-8 border-primary/30">
+            <a href={siteProfile.calendlyUrl} target="_blank" rel="noopener noreferrer">
+              Book
+            </a>
+          </Button>
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 text-foreground hover:text-muted-foreground"
+            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+          >
+            {mobileMenuOpen ? <XIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
+
+      <motion.div
+        initial={false}
+        animate={{ height: mobileMenuOpen ? 'auto' : 0, opacity: mobileMenuOpen ? 1 : 0 }}
+        transition={{ duration: 0.25 }}
+        className="md:hidden overflow-hidden border-t border-border/40 bg-background"
+      >
+        <div className="px-4 py-3 flex flex-col gap-1">
+          {(
+            [
+              ['About', 'about'],
+              ['Services', 'services'],
+              ['Projects', 'projects'],
+              ['Contact', 'contact'],
+            ] as const
+          ).map(([label, id]) => (
+            <button
+              key={id}
+              type="button"
+              className="py-3 text-left text-sm font-medium text-muted-foreground hover:text-foreground border-b border-border/30 last:border-0"
+              onClick={() => scrollToId(id, closeMobile)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </motion.div>
     </header>
   );
-}; 
+};
