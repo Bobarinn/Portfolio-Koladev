@@ -97,9 +97,9 @@ export const sections = {
       header: 'POST /inquiry',
       contentType: 'application/json',
       fields: {
-        from_name: { label: '"from_name":', placeholder: 'your name' },
-        reply_to: { label: '"reply_to":', placeholder: 'you@company.com' },
-        message: { label: '"message":', placeholder: '// what are you building?' },
+        from_name: { label: 'Your name', placeholder: 'your name' },
+        reply_to: { label: 'Your email', placeholder: 'you@company.com' },
+        message: { label: '"Message":', placeholder: '// what are you building?' },
       },
       submitButton: 'submit --inquiry',
       submittingText: 'sending...',
