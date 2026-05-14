@@ -60,8 +60,8 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["var(--font-sans)", ...defaultTheme.fontFamily.sans],
-        mono: ["var(--font-mono)", ...defaultTheme.fontFamily.mono],
+        sans: ["var(--font-sans)", "IBM Plex Mono", "ui-monospace", ...defaultTheme.fontFamily.mono],
+        mono: ["var(--font-mono)", "IBM Plex Mono", "ui-monospace", ...defaultTheme.fontFamily.mono],
       },
       keyframes: {
         "accordion-down": {

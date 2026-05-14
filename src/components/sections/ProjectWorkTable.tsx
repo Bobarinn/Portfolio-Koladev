@@ -48,7 +48,7 @@ export function ProjectWorkTable() {
     <div className="font-mono text-[11px] leading-relaxed md:text-xs">
       <div className="mb-6 flex flex-col gap-2 border-b border-border/60 pb-4 sm:flex-row sm:items-end sm:justify-between">
         <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground md:text-[11px]">
-          <span className="text-primary">03</span>
+          <span className="text-primary">.</span>
           <span className="mx-2 text-border">/</span>
           <span>WORK</span>
           <span className="mx-2 text-border">/</span>

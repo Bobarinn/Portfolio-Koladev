@@ -98,22 +98,34 @@
   --terminal-comment: #166534;
 }
 
-/* Inter + JetBrains Mono (engineer / structured) */
+/* JetBrains Mono (engineer / structured) */
 @layer base {
   :root {
-    --font-fallback: system-ui, sans-serif;
+    --font-fallback: "IBM Plex Mono", ui-monospace, monospace;
   }
 
   body {
     font-family: var(--font-sans), var(--font-fallback);
-    letter-spacing: -0.01em;
+    letter-spacing: 0;
   }
 
   pre,
   code,
   kbd,
   samp {
-    font-family: var(--font-mono), ui-monospace, monospace;
+    font-family: var(--font-mono), var(--font-fallback);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans), var(--font-fallback);
+  }
+
+  input,
+  textarea,
+  select,
+  button,
+  label {
+    font-family: var(--font-sans), var(--font-fallback);
   }
 }
 
@@ -129,7 +141,7 @@ h3,
 h4,
 h5,
 h6 {
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
   font-weight: 600;
 }
 
@@ -137,41 +149,41 @@ h6 {
 .text-4xl,
 .text-5xl,
 .text-6xl {
-  letter-spacing: -0.03em;
+  letter-spacing: 0;
 }
 
 .dark {
-  /* Cobalt + cool slate (aligned with structured engineer reference + headshot tones) */
-  --background: oklch(0.14 0.035 264);
+  /* Lighter blue-gray for better contrast and readability */
+  --background: oklch(0.19 0.02 264);
   --foreground: oklch(0.96 0.01 264);
-  --card: oklch(0.175 0.038 264);
+  --card: oklch(0.22 0.025 264);
   --card-foreground: oklch(0.96 0.01 264);
-  --popover: oklch(0.175 0.038 264);
+  --popover: oklch(0.19 0.025 264);
   --popover-foreground: oklch(0.96 0.01 264);
   --primary: oklch(0.62 0.17 252);
   --primary-foreground: oklch(0.99 0.005 264);
-  --secondary: oklch(0.22 0.035 264);
+  --secondary: oklch(0.24 0.02 264);
   --secondary-foreground: oklch(0.92 0.015 264);
-  --muted: oklch(0.22 0.03 264);
+  --muted: oklch(0.24 0.02 264);
   --muted-foreground: oklch(0.66 0.03 252);
-  --accent: oklch(0.24 0.04 252);
+  --accent: oklch(0.26 0.03 252);
   --accent-foreground: oklch(0.96 0.01 264);
   --destructive: oklch(0.62 0.2 25);
-  --border: oklch(0.3 0.04 264);
-  --input: oklch(0.28 0.04 264);
+  --border: oklch(0.32 0.03 264);
+  --input: oklch(0.3 0.03 264);
   --ring: oklch(0.58 0.15 252);
   --chart-1: oklch(0.58 0.15 252);
   --chart-2: oklch(0.65 0.12 200);
   --chart-3: oklch(0.72 0.1 180);
   --chart-4: oklch(0.55 0.12 290);
   --chart-5: oklch(0.62 0.16 40);
-  --sidebar: oklch(0.16 0.035 264);
+  --sidebar: oklch(0.18 0.02 264);
   --sidebar-foreground: oklch(0.96 0.01 264);
   --sidebar-primary: oklch(0.62 0.17 252);
   --sidebar-primary-foreground: oklch(0.99 0.005 264);
-  --sidebar-accent: oklch(0.22 0.035 264);
+  --sidebar-accent: oklch(0.24 0.02 264);
   --sidebar-accent-foreground: oklch(0.96 0.01 264);
-  --sidebar-border: oklch(0.28 0.04 264);
+  --sidebar-border: oklch(0.3 0.03 264);
   --sidebar-ring: oklch(0.58 0.15 252);
 }
 
@@ -216,9 +228,9 @@ h6 {
   position: absolute;
   width: 200%;
   height: 200%;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
   background-size: 50px 50px;
   left: -50%;
   top: -50%;
@@ -277,13 +289,13 @@ h6 {
   width: 100%;
   height: 100%;
   background: radial-gradient(
-    circle at center, 
-    rgba(var(--glow-blue-rgb), 0.15) 0%, 
-    rgba(var(--glow-purple-rgb), 0.1) 25%, 
-    rgba(var(--glow-cyan-rgb), 0.05) 50%, 
+    circle at center,
+    rgba(var(--glow-blue-rgb), 0.12) 0%,
+    rgba(var(--glow-purple-rgb), 0.08) 25%,
+    rgba(var(--glow-cyan-rgb), 0.04) 50%,
     transparent 70%
   );
-  opacity: 0.7;
+  opacity: 0.6;
   animation: pulse 8s ease-in-out infinite alternate;
   max-width: 100vw;
 }
@@ -344,7 +356,7 @@ h6 {
   position: absolute;
   border-radius: 50%;
   filter: blur(40px);
-  opacity: 0.4;
+  opacity: 0.35;
   z-index: 0;
   max-width: 40%;
 }
@@ -973,12 +985,12 @@ html, body, #__next, main {
   cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='24' style='fill:none'><text font-family='monospace' font-size='20' x='0' y='20' fill='%234ade80'>_</text></svg>") 8 16, auto;
 }
 
-/* Engineer / mono / cobalt surface (portfolio) */
+/* Engineer / mono / blue-gray surface (portfolio) */
 .engineer-surface {
   background-color: var(--background);
   background-image:
-    linear-gradient(to right, oklch(0.62 0.17 252 / 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, oklch(0.62 0.17 252 / 0.025) 1px, transparent 1px);
+    linear-gradient(to right, oklch(0.62 0.17 252 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0.62 0.17 252 / 0.03) 1px, transparent 1px);
   background-size: 72px 72px;
   background-position: center top;
 }

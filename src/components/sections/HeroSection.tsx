@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { GitHubLogoIcon, LinkedInLogoIcon, TwitterLogoIcon } from '@radix-ui/react-icons';
 import { CalendarIcon } from 'lucide-react';
 import { siteProfile } from '@/data/profile';
+import { sections, designSystem } from '@/data/sections';
 import { cn } from '@/lib/utils';
 
 const polaroidCaptionFont = Lora({
@@ -18,6 +19,8 @@ const polaroidCaptionFont = Lora({
 });
 
 export const HeroSection = () => {
+  const { hero } = sections;
+
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
@@ -29,9 +32,27 @@ export const HeroSection = () => {
     calendar: <CalendarIcon className="h-5 w-5" />,
   };
 
+  // Function to highlight specific word in headline
+  const renderHeadline = (text: string, highlight: string) => {
+    const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+    return (
+      <>
+        {parts.map((part, i) =>
+          part.toLowerCase() === highlight.toLowerCase() ? (
+            <span key={i} className={designSystem.highlightColor}>
+              {part}
+            </span>
+          ) : (
+            part
+          )
+        )}
+      </>
+    );
+  };
+
   return (
-    <section className="relative border-b border-border/80">
-      <div className="max-w-6xl mx-auto px-4 pt-28 pb-16 md:pt-32 md:pb-20">
+    <section className="relative border-b border-border/60">
+      <div className={cn(designSystem.maxWidth.narrow, 'mx-auto', designSystem.sectionPadding.x, 'pt-28 pb-16 md:pt-32 md:pb-20')}>
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
@@ -39,27 +60,30 @@ export const HeroSection = () => {
           className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-16 items-start"
         >
           <div>
-            <p className="section-eyebrow mb-4">Bubble.io · AI · Product</p>
+            <p className={designSystem.sectionEyebrow + ' mb-4'}>{hero.eyebrow}</p>
             <p className="font-mono text-sm text-muted-foreground mb-3">{siteProfile.name}</p>
-            <h1 className="text-3xl md:text-4xl lg:text-[2.5rem] font-semibold tracking-tight text-foreground leading-[1.15] mb-5">
-              {siteProfile.title}
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-normal tracking-tight text-foreground leading-[1.15] mb-6">
+              {renderHeadline(hero.headline, hero.highlightWord)}
             </h1>
-            <p className="text-lg text-muted-foreground max-w-xl leading-relaxed mb-4">{siteProfile.tagline}</p>
-            <p className="text-sm text-muted-foreground max-w-xl leading-relaxed mb-10 border-l-2 border-primary/50 pl-4">
-              {siteProfile.description}
+            <p className="text-base text-muted-foreground max-w-xl leading-relaxed mb-10">
+              {hero.tagline}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 mb-10">
-              <Button size="lg" className="sm:min-w-[168px] font-mono text-xs uppercase tracking-wider" onClick={() => scrollTo('projects')}>
-                View projects
+              <Button
+                size="lg"
+                className="sm:min-w-[168px] font-mono text-xs uppercase tracking-wider"
+                onClick={() => scrollTo(hero.buttons.primary.scrollTo)}
+              >
+                {hero.buttons.primary.text}
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                className="sm:min-w-[168px] font-mono text-xs uppercase tracking-wider border-primary/35 hover:border-primary/60 hover:bg-primary/5"
-                onClick={() => scrollTo('contact')}
+                className="sm:min-w-[168px] font-mono text-xs uppercase tracking-wider border-border/60 hover:border-primary/60 hover:bg-primary/5"
+                onClick={() => scrollTo(hero.buttons.secondary.scrollTo)}
               >
-                Work with me
+                {hero.buttons.secondary.text}
               </Button>
             </div>
 
@@ -70,7 +94,7 @@ export const HeroSection = () => {
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2.5 rounded-md border border-border/70 bg-card/40 text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
+                  className="p-2.5 rounded-sm border border-border/70 bg-card/40 text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
                 >
                   {iconMap[social.icon] || social.name}
                   <span className="sr-only">{social.name}</span>
@@ -112,7 +136,7 @@ export const HeroSection = () => {
                 </div>
               </div>
             </div>
-            <dl className="w-full max-w-[280px] font-mono text-[11px] text-muted-foreground space-y-2 border border-border/60 rounded-md p-4 bg-card/30">
+            <dl className="w-full max-w-[280px] font-mono text-[11px] text-muted-foreground space-y-2 border border-border/60 rounded-sm p-4 bg-card/30">
               <div className="flex justify-between gap-4">
                 <dt className="text-primary/90">Role</dt>
                 <dd className="text-right text-foreground/90">Freelance builder</dd>

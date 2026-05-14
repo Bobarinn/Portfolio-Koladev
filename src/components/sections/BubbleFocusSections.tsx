@@ -3,6 +3,8 @@
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { sections, designSystem } from '@/data/sections';
+import { cn } from '@/lib/utils';
 
 const fadeUp = {
   initial: { opacity: 0, y: 16 },
@@ -11,71 +13,59 @@ const fadeUp = {
   transition: { duration: 0.45 },
 };
 
+// Section Header Component for consistency
+const SectionHeader = ({ number, label }: { number: string; label: string }) => (
+  <div className="mb-16">
+    <div className="flex items-center gap-4 border-b border-border/60 pb-4">
+      <span className={designSystem.sectionNumber}>S {number}</span>
+      <span className={designSystem.sectionLabel}>{label}</span>
+      <div className="flex-1 h-px bg-border/40"></div>
+    </div>
+  </div>
+);
+
 export function AboutSection() {
+  const { about } = sections;
+
   return (
-    <section id="about" className="scroll-mt-24 py-20 md:py-24 px-4 border-t border-border/60">
-      <div className="max-w-3xl mx-auto">
-        <motion.div {...fadeUp}>
-          <p className="section-eyebrow mb-3">About</p>
-          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-6 text-foreground">How I work</h2>
-          <div className="space-y-4 text-muted-foreground leading-relaxed">
-            <p>
-              I&apos;m a software developer and product builder with deep experience in Bubble.io, other no-code
-              platforms, AI automation, and traditional development when a project needs it.
-            </p>
-            <p>
-              I&apos;ve shipped products from AI-assisted wedding planning and job platforms to home-service CRMs,
-              review systems, and voice agents. That mix gives me a practical bridge between no-code speed and
-              custom integrations.
-            </p>
-            <p>
-              I don&apos;t only assemble screens. I help define workflows, structure databases, wire APIs, tighten UX,
-              and turn vague ideas into software people actually use.
-            </p>
-          </div>
-        </motion.div>
+    <section id="about" className={cn('scroll-mt-24 border-t border-border/60', designSystem.sectionPadding.y, designSystem.sectionPadding.x)}>
+      <div className={cn(designSystem.maxWidth.default, 'mx-auto')}>
+        <SectionHeader number={about.number} label={about.label} />
+        <div className={cn(designSystem.maxWidth.text, 'mx-auto')}>
+          <motion.div {...fadeUp}>
+            <h2 className="text-2xl md:text-3xl font-normal tracking-tight mb-6 text-foreground">{about.title}</h2>
+            <div className="space-y-4 text-muted-foreground leading-relaxed">
+              {about.content.map((paragraph, index) => (
+                <p key={index}>{paragraph}</p>
+              ))}
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
 }
 
-const services = [
-  {
-    title: 'Bubble.io development',
-    body: 'Responsive, production-ready Bubble apps with clear workflows, scalable data models, and polished UX.',
-  },
-  {
-    title: 'AI and automation',
-    body: 'Connect Bubble and custom pieces to LLMs, agents, and automation (Zapier, Make, APIs) so products feel intelligent, not bolted on.',
-  },
-  {
-    title: 'MVP development',
-    body: 'Help founders go from idea to launch: core journey first, fast build, and guardrails so you don&apos;t drown in unnecessary complexity.',
-  },
-  {
-    title: 'API and backend integration',
-    body: 'Stripe, PayPal, Firebase, Google APIs, AI providers, webhooks, and custom backends, integrated cleanly with Bubble where it makes sense.',
-  },
-] as const;
-
 export function WhatIDoSection() {
+  const { services } = sections;
+
   return (
-    <section id="services" className="scroll-mt-24 py-20 md:py-24 px-4 border-t border-border/60 bg-card/20">
-      <div className="max-w-6xl mx-auto">
+    <section id="services" className={cn('scroll-mt-24 border-t border-border/60 bg-card/20', designSystem.sectionPadding.y, designSystem.sectionPadding.x)}>
+      <div className={cn(designSystem.maxWidth.default, 'mx-auto')}>
+        <SectionHeader number={services.number} label={services.label} />
         <motion.div {...fadeUp} className="mb-12 max-w-2xl">
-          <p className="section-eyebrow mb-3">Capabilities</p>
-          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-3 text-foreground">What I do</h2>
+          <h2 className="text-2xl md:text-3xl font-normal tracking-tight mb-3 text-foreground">{services.title}</h2>
           <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-            Independent freelance work centered on Bubble.io, plus the integrations and AI layers that real products need.
+            {services.description}
           </p>
         </motion.div>
         <div className="grid sm:grid-cols-2 gap-5">
-          {services.map((s) => (
-            <motion.div key={s.title} {...fadeUp}>
-              <Card className="h-full rounded-lg border border-border/60 bg-card/40 transition-colors hover:border-primary/35">
+          {services.items.map((item) => (
+            <motion.div key={item.title} {...fadeUp}>
+              <Card className="h-full rounded-sm border border-border/60 bg-card/40 transition-colors hover:border-primary/35">
                 <CardContent className="p-6">
-                  <h3 className="text-base font-semibold mb-2 text-foreground">{s.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{s.body}</p>
+                  <h3 className="text-base font-medium mb-2 text-foreground">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{item.body}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -86,36 +76,29 @@ export function WhatIDoSection() {
   );
 }
 
-const reasons = [
-  'Production Bubble.io applications end to end',
-  'AI APIs and automation wired into real user flows',
-  'Leading developers and QA on complex builds',
-  'Database design and non-trivial Bubble workflows',
-  'Third-party APIs, payments, and webhooks',
-  'Helping founders structure MVPs from fuzzy briefs',
-  'Growing MVPs toward more scalable architectures',
-] as const;
-
 export function WhyWorkSection() {
+  const { why } = sections;
+
   return (
-    <section id="why" className="scroll-mt-24 py-20 md:py-24 px-4 border-t border-border/60">
-      <div className="max-w-3xl mx-auto">
-        <motion.div {...fadeUp}>
-          <p className="section-eyebrow mb-3">Rationale</p>
-          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4 text-foreground">Why work with me</h2>
-          <p className="text-muted-foreground mb-8 leading-relaxed">
-            I care about product strategy, workflows, business goals, and the tradeoff between shipping fast and
-            building something you can live with for the next phase, not just tickets closed.
-          </p>
-          <ul className="space-y-3 text-muted-foreground">
-            {reasons.map((r) => (
-              <li key={r} className="flex gap-3">
-                <span className="text-foreground mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
-                <span>{r}</span>
-              </li>
-            ))}
-          </ul>
-        </motion.div>
+    <section id="why" className={cn('scroll-mt-24 border-t border-border/60', designSystem.sectionPadding.y, designSystem.sectionPadding.x)}>
+      <div className={cn(designSystem.maxWidth.default, 'mx-auto')}>
+        <SectionHeader number={why.number} label={why.label} />
+        <div className={cn(designSystem.maxWidth.text, 'mx-auto')}>
+          <motion.div {...fadeUp}>
+            <h2 className="text-2xl md:text-3xl font-normal tracking-tight mb-4 text-foreground">{why.title}</h2>
+            <p className="text-muted-foreground mb-8 leading-relaxed">
+              {why.description}
+            </p>
+            <ul className="space-y-3 text-muted-foreground">
+              {why.reasons.map((reason) => (
+                <li key={reason} className="flex gap-3">
+                  <span className="text-foreground mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
+                  <span>{reason}</span>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -124,136 +107,46 @@ export function WhyWorkSection() {
 const stackColumns = [
   {
     label: 'No-code',
-    items: [
-      'Bubble.io',
-      'FlutterFlow',
-      'Make',
-      'Zapier',
-      'n8n',
-      'Airtable',
-      'Softr',
-      'Glide',
-      'Webflow',
-      'Framer',
-      'Retool',
-      'WeWeb',
-      'Notion',
-      'Budibase',
-    ],
+    items: ['Bubble.io', 'Make', 'Zapier', 'FlutterFlow', 'n8n'],
   },
   {
     label: 'AI',
-    items: [
-      'OpenAI',
-      'Gemini',
-      'Anthropic',
-      'Claude',
-      'Claude Code',
-      'Codex',
-      'Cursor',
-      'LangChain',
-      'LangGraph',
-      'Hugging Face',
-      'AssemblyAI',
-      'Cartesia',
-      'Whisper',
-      'Pinecone',
-      'RAG / evals',
-      'Ollama',
-    ],
+    items: ['Claude Code', 'Langchain', 'Codex', 'MCP'],
   },
   {
     label: 'Code',
-    items: [
-      'TypeScript',
-      'JavaScript',
-      'Python',
-      'SQL',
-      'Node.js',
-      'Next.js',
-      'React',
-      'FastAPI',
-      'Express',
-      'Zod',
-      'Prisma',
-      'Tailwind CSS',
-      'ESLint',
-      'Vitest',
-      'Playwright',
-    ],
+    items: ['JavaScript', 'Python', 'SQL'],
   },
   {
     label: 'Backend & data',
-    items: [
-      'Firebase',
-      'PostgreSQL',
-      'Neon',
-      'PlanetScale',
-      'Redis',
-      'REST APIs',
-      'GraphQL',
-      'WebSockets',
-      'Stripe',
-      'OAuth 2',
-      'JWT',
-      'Drizzle ORM',
-      'Cloudflare Workers',
-      'S3 / R2',
-    ],
+    items: ['Firebase', 'Supabase', 'Xano', 'Oracle SQL'],
   },
   {
     label: 'Product & ops',
-    items: [
-      'Figma',
-      'FigJam',
-      'Linear',
-      'Jira',
-      'GitHub',
-      'GitLab',
-      'Postman',
-      'Insomnia',
-      'Docker',
-      'Compose',
-      'GitHub Actions',
-      'Vercel',
-      'Sentry',
-      'Datadog',
-      'Slack webhooks',
-    ],
+    items: ['Figma', 'GitHub', 'Linear', 'Postman', 'Vercel'],
   },
 ] as const;
 
 export function ToolsSection() {
+  const { tools } = sections;
+
   return (
-    <section id="tools" className="scroll-mt-24 py-20 md:py-24 px-4 bg-card/15 border-t border-border/60">
-      <div className="max-w-6xl mx-auto">
+    <section id="tools" className={cn('scroll-mt-24 bg-card/15 border-t border-border/60', designSystem.sectionPadding.y, designSystem.sectionPadding.x)}>
+      <div className={cn(designSystem.maxWidth.default, 'mx-auto')}>
+        <SectionHeader number={tools.number} label={tools.label} />
         <motion.div {...fadeUp} className="mb-8">
-          <div className="mb-6 flex flex-col gap-2 border-b border-border/60 pb-4 sm:flex-row sm:items-end sm:justify-between">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground md:text-[11px]">
-              <span className="text-primary">05</span>
-              <span className="mx-2 text-border">/</span>
-              <span>STACK</span>
-              <span className="mx-2 text-border">/</span>
-              <span>TOOLS & TECHNOLOGIES</span>
-            </p>
-            <p className="flex items-center gap-1.5 text-[10px] text-muted-foreground/80">
-              <ChevronDown className="h-3 w-3 opacity-70" aria-hidden />
-              scroll
-            </p>
-          </div>
-          <p className="text-sm text-muted-foreground max-w-2xl leading-relaxed">
-            Names only, biased toward what ships in client work: no-code surfaces, AI wiring, integrations, and delivery
-            hygiene.
+          <p className="text-sm text-muted-foreground max-w-2xl leading-relaxed mb-8">
+            {tools.description}
           </p>
         </motion.div>
 
         <motion.div {...fadeUp} className="-mx-1 overflow-x-auto md:mx-0">
           <div className="inline-block min-w-[880px] w-full max-w-none align-top font-mono text-[11px] leading-relaxed md:min-w-full md:text-xs">
-            <div className="rounded-md border border-border/80 bg-card/25">
+            <div className="rounded-sm border border-border/80 bg-card/25">
               <div className="grid grid-cols-5 divide-x divide-border/50">
                 {stackColumns.map((col) => (
                   <div key={col.label} className="min-w-0">
-                    <div className="border-b border-border/60 bg-foreground/5 px-3 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-primary md:px-3.5 md:text-[11px]">
+                    <div className="border-b border-border/60 bg-foreground/5 px-3 py-2.5 text-[10px] font-medium uppercase tracking-wider text-primary md:px-3.5 md:text-[11px]">
                       {col.label}
                     </div>
                     <ul className="text-muted-foreground">
@@ -283,14 +176,13 @@ export function ToolsSection() {
 
 export function FinalCtaSection() {
   return (
-    <section className="py-16 md:py-20 px-4 border-t border-border/60">
-      <div className="max-w-2xl mx-auto text-center">
+    <section className={cn('border-t border-border/60', designSystem.sectionPadding.y, designSystem.sectionPadding.x)}>
+      <div className={cn(designSystem.maxWidth.text, 'mx-auto text-center')}>
         <motion.div {...fadeUp}>
-          <p className="section-eyebrow mb-4">Next step</p>
           <p className="text-muted-foreground leading-relaxed mb-2">
             Have an idea you want to build, or an existing Bubble app that needs structure, integrations, or a quality pass?
           </p>
-          <p className="text-lg font-medium text-foreground">Let&apos;s work together.</p>
+          <p className="text-lg font-normal text-foreground">Let&apos;s work together.</p>
         </motion.div>
       </div>
     </section>

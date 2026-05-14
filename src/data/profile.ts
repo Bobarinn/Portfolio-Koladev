@@ -8,7 +8,7 @@ export const profile = {
   workSchedule: "Typically 9 AM–11 PM GMT+1 for meetings; project-based freelance engagements. Availability depends on current client load.",
   email: "koladeabobarin@gmail.com",
   phone: "+1 (254) 447 4042",
-  location: "Waco, Texas and All of United States",
+  location: "Austin, Texas and All of United States",
   calendlyUrl: "https://calendly.com/koladeabobarin/30min",
   resumeUrl: "/resume.pdf",
   linkedinUrl: "https://www.linkedin.com/in/koladeabobarin/",

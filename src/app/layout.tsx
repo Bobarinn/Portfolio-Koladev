@@ -1,13 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 
-const fontSans = Inter({
+const fontSans = JetBrains_Mono({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-sans",
+  weight: ["300", "400", "500", "600", "700"],
   preload: true,
 });
 
@@ -31,11 +32,11 @@ export const metadata: Metadata = {
     "Independent Bubble.io developer and AI automation builder for startups and founders: MVPs, integrations, workflows, and scalable no-code products.",
   icons: {
     icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
       { url: '/favicon.ico', sizes: 'any' },
-      { url: '/icon.png', type: 'image/png' },
     ],
     apple: [
-      { url: '/icon.png', sizes: '180x180' }
+      { url: '/icon.svg', type: 'image/svg+xml' }
     ],
   },
   manifest: '/site.webmanifest',

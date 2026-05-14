@@ -2,11 +2,27 @@
 
 import { motion } from 'framer-motion';
 import { ProjectWorkTable } from '@/components/sections/ProjectWorkTable';
+import { sections, designSystem } from '@/data/sections';
+import { cn } from '@/lib/utils';
+
+// Section Header Component for consistency
+const SectionHeader = ({ number, label }: { number: string; label: string }) => (
+  <div className="mb-16">
+    <div className="flex items-center gap-4 border-b border-border/60 pb-4">
+      <span className={designSystem.sectionNumber}>S {number}</span>
+      <span className={designSystem.sectionLabel}>{label}</span>
+      <div className="flex-1 h-px bg-border/40"></div>
+    </div>
+  </div>
+);
 
 export const ProjectsSection = () => {
+  const { projects } = sections;
+
   return (
-    <section id="projects" className="scroll-mt-24 py-20 md:py-24 px-4 border-t border-border/60">
-      <div className="max-w-5xl mx-auto">
+    <section id="projects" className={cn('scroll-mt-24 border-t border-border/60', designSystem.sectionPadding.y, designSystem.sectionPadding.x)}>
+      <div className={cn(designSystem.maxWidth.default, 'mx-auto')}>
+        <SectionHeader number={projects.number} label={projects.label} />
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -14,10 +30,9 @@ export const ProjectsSection = () => {
           viewport={{ once: true }}
           className="mb-10 md:mb-12"
         >
-          <p className="section-eyebrow mb-3">Selected work</p>
-          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">Featured projects</h2>
-          <p className="mt-3 text-sm md:text-base text-muted-foreground max-w-2xl leading-relaxed">
-            Collapsible work log, same structure I use to document scope, stack, and ship status for stakeholders.
+          <h2 className="text-2xl md:text-3xl font-normal tracking-tight text-foreground mb-3">{projects.title}</h2>
+          <p className="text-sm md:text-base text-muted-foreground max-w-2xl leading-relaxed">
+            {projects.description}
           </p>
         </motion.div>
 

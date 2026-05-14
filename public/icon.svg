@@ -1,0 +1,14 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" fill="#1a1f33"/>
+
+  <!-- Border -->
+  <rect x="8" y="8" width="496" height="496" rx="88" stroke="#3d4966" stroke-width="2" fill="none"/>
+
+  <!-- K Letter -->
+  <path d="M120 160 L120 352 L155 352 L155 268 L230 352 L280 352 L200 265 L275 160 L230 160 L155 255 L155 160 Z" fill="#7B9FFF"/>
+
+  <!-- A Letter -->
+  <path d="M300 352 L335 352 L355 295 L405 295 L425 352 L460 352 L390 160 L370 160 Z M365 265 L380 210 L395 265 Z" fill="#7B9FFF"/>
+</svg>
+
